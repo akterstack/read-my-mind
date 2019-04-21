@@ -7,6 +7,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import * as TypeORM from 'typeorm';
 import { Container } from 'typedi';
+import { AuthMiddleware } from '@/AuthMiddleware';
 
 TypeORM.useContainer(Container);
 async function bootstrap() {
@@ -15,6 +16,7 @@ async function bootstrap() {
   // build TypeGraphQL executable schema
   const schema = await buildSchema({
     container: Container,
+    globalMiddlewares: [AuthMiddleware],
     resolvers: [UserResolver, GameResolver],
   });
 
@@ -42,9 +44,9 @@ async function bootstrap() {
   server.applyMiddleware({ app, path });
 
   // Start the server
-  app.listen({ port: 4000 }, () => {
+  app.listen({ port: 3000 }, () => {
     console.log(
-      `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+      `🚀 Server ready at http://localhost:3000${server.graphqlPath}`
     );
   });
 }
