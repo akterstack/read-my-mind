@@ -6,7 +6,7 @@ import { Repository, Transaction, TransactionRepository } from 'typeorm';
 export class UserService {
   // @ts-ignore
   @Transaction()
-  save(args, @TransactionRepository(User) txr: Repository<User>) {
+  create(args, @TransactionRepository(User) txr: Repository<User>) {
     return txr.save(args);
   }
 }

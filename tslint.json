@@ -10,8 +10,9 @@
     "prettier": true,
     "no-console": false,
     "no-implicit-dependencies": [true, "dev", ["@"]],
-    "member-access": [true, "no-public"],
-    "no-submodule-imports": [true, "@/resolvers"]
+    "no-submodule-imports": [true, "@/resolvers"],
+    "object-literal-sort-keys": false,
+    "member-access": [true, "no-public"]
   },
   "rulesDirectory": [
     "tslint-plugin-prettier"

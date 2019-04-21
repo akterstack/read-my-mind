@@ -29,7 +29,7 @@ export class Game {
   @Field()
   @Max(20)
   @Column({ default: 20 })
-  maxQuestionPerPlayer: number;
+  maxHint: number;
 
   @Field()
   @Column({ default: true })
@@ -38,7 +38,6 @@ export class Game {
   @Field(() => User)
   @ManyToOne(() => User, user => user.hostOfGames, {
     nullable: false,
-    eager: true,
   })
   host: User;
 

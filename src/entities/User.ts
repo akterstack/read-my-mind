@@ -21,6 +21,10 @@ export class User {
   @Column()
   username: string;
 
+  @Field()
+  @Column()
+  password: string;
+
   @Field(() => [Game])
   @OneToMany(() => Game, game => game.host)
   hostOfGames: Game[];
