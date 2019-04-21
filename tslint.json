@@ -2,10 +2,18 @@
   "defaultSeverity": "error",
   "extends": [
     "tslint:latest",
-    "tslint-config-prettier"
+    "tslint-config-prettier",
+    "tslint-plugin-prettier"
   ],
   "jsRules": {},
   "rules": {
+    "prettier": true,
+    "no-console": false,
+    "no-implicit-dependencies": [true, "dev", ["@"]],
+    "member-access": [true, "no-public"],
+    "no-submodule-imports": [true, "@/resolvers"]
   },
-  "rulesDirectory": []
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ]
 }
