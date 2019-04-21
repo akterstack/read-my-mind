@@ -1,2 +1,2 @@
-# read-my-mind
-A modified version of popular 20Questions game
+# READ MY MIND
+A sort of popular 20 Questions Game

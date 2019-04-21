@@ -1,0 +1,33 @@
+{
+  "name": "read-my-mind",
+  "version": "0.1.0",
+  "description": "Read My Mind is a sort of popular 20 Questions Game",
+  "private": true,
+  "author": "Akter Hossain <akterstack@gmail.com> (https://www.linkedin.com/in/akterstack/)",
+  "main": "dist/index.js",
+  "scripts": {
+    "start:dev": "tsnd --respawn --no-notify -r tsconfig-paths/register ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akterstack/read-my-mind.git"
+  },
+  "keywords": [
+    "20Questions",
+    "Game"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/akterstack/read-my-mind/issues"
+  },
+  "homepage": "https://github.com/akterstack/read-my-mind#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.32",
+    "tsconfig-paths": "^3.8.0",
+    "tslint": "^5.16.0",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.4.3"
+  }
+}
