@@ -12,48 +12,79 @@
               >Change Options</v-stepper-step
             >
             <v-divider></v-divider>
-            <v-stepper-step step="3">Publish the Game</v-stepper-step>
+            <v-stepper-step step="3">Publish/Start</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
             <v-stepper-content step="1">
-              <v-layout align-center justify-center fill-height>
+              <v-layout align-center justify-center>
                 <v-flex>
                   <v-text-field
                     outline
                     label="Your precious word"
                     prepend-inner-icon="place"
+                    v-model="word"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
               <StepperActions
-                step-name="word"
-                :showBackButton="false"
+                stepName="word"
+                :displayNextButton="word ? 'show' : 'disable'"
+                displayBackButton="disable"
                 @stepNext="el = 2"
               />
             </v-stepper-content>
 
             <v-stepper-content step="2">
-              <v-card
-                class="mb-5"
-                color="grey lighten-1"
-                height="200px"
-              ></v-card>
+              <v-layout align-center justify-center>
+                <v-flex xs4>
+                  <v-label>Max Players</v-label>
+                </v-flex>
+                <v-flex xs8>
+                  <v-text-field
+                    type="number"
+                    v-model="maxPlayer"
+                    value="1"
+                  ></v-text-field>
+                  <span class="caption"
+                    >Maximum number of players can join</span
+                  >
+                </v-flex>
+              </v-layout>
+              <v-layout align-center justify-center>
+                <v-flex xs4>
+                  <v-label>Max Hints</v-label>
+                </v-flex>
+                <v-flex xs8>
+                  <v-text-field
+                    type="number"
+                    v-model="maxHint"
+                    value="20"
+                  ></v-text-field>
+                  <span class="caption"
+                    >Maximum yes/no question a player can ask</span
+                  >
+                </v-flex>
+              </v-layout>
               <StepperActions
-                step-name="options"
+                stepName="options"
+                :displayNextButton="
+                  maxPlayer > 0 && maxHint > 0 ? 'show' : 'disable'
+                "
                 @stepNext="el = 3"
                 @stepBack="el = 1"
               />
             </v-stepper-content>
 
             <v-stepper-content step="3">
-              <v-card class="mb-5" color="grey lighten-1" height="200px">
-                <v-card-title>hhhhh</v-card-title>
+              <v-card class="mb-5" color="lime darker-1" height="200px">
+                <v-card-title>Start!</v-card-title>
               </v-card>
               <StepperActions
                 stepName="publish"
                 nextButtonLabel="Publish"
                 @stepBack="el = 2"
+                @stepNext="publish"
               />
             </v-stepper-content>
           </v-stepper-items>
@@ -72,7 +103,19 @@ export default {
   data() {
     return {
       el: 0,
+      word: null,
+      maxPlayer: 1,
+      maxHint: 20,
     };
+  },
+  methods: {
+    publish() {},
+    start() {},
   },
 };
 </script>
+<style scoped>
+.v-message {
+  display: none;
+}
+</style>

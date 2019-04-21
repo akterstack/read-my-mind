@@ -1,12 +1,18 @@
 <template>
   <v-layout align-end justify-start reverse row>
-    <div v-if="showNextButton">
-      <v-btn color="primary" @click="stepNext">
+    <div v-if="displayNextButton !== 'hide'">
+      <v-btn
+        color="primary"
+        :disabled="displayNextButton === 'disable'"
+        @click="stepNext"
+      >
         {{ nextButtonLabel }}
       </v-btn>
     </div>
-    <div v-if="showBackButton">
-      <v-btn flat @click="stepBack">Back</v-btn>
+    <div v-if="displayBackButton !== 'hide'">
+      <v-btn flat :disabled="displayBackButton === 'disable'" @click="stepBack"
+        >Back</v-btn
+      >
     </div>
   </v-layout>
 </template>
@@ -17,13 +23,13 @@ export default {
       type: String,
       required: true,
     },
-    showNextButton: {
-      type: Boolean,
-      default: true,
+    displayNextButton: {
+      type: String,
+      default: 'show',
     },
-    showBackButton: {
-      type: Boolean,
-      default: true,
+    displayBackButton: {
+      type: String,
+      default: 'show',
     },
     nextButtonLabel: {
       type: String,
