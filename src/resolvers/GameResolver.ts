@@ -1,7 +1,6 @@
 import { Game } from '@/entities';
-import { Id } from '@/resolvers/helpers';
 import { GameService } from '@/services';
-import { Args, Mutation, Query } from 'type-graphql';
+import { Arg, Int, Mutation, Query } from 'type-graphql';
 import { Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
@@ -12,7 +11,7 @@ export class GameResolver {
   ) {}
 
   @Query(() => Game)
-  game(@Args() { id }: Id): Promise<Game> {
+  game(@Arg('id', () => Int) id: number): Promise<Game> {
     return this.gameRepository.findOne(id);
   }
 

@@ -1,7 +1,5 @@
 import { User } from '@/entities';
-import { AuthParams } from '@/resolvers/helpers/AuthParams';
-import { Context } from '@/resolvers/helpers/Context';
-import { UserLoginInfo } from '@/resolvers/helpers/UserLoginInfo';
+import { AuthParams, Context, UserLoginInfo } from '@/resolvers/helpers';
 import { UserService } from '@/services';
 import * as bcrypt from 'bcrypt';
 import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
