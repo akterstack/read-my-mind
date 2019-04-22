@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import { Home, CreateGame } from './pages';
+import { Home, CreateGame, Signup, Login } from './pages';
 
 Vue.use(Router);
 
@@ -12,6 +12,16 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: Signup,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
     },
     {
       path: '/game/create',

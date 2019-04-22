@@ -7,4 +7,7 @@ export class AuthParams {
 
   @Field()
   password: string;
+
+  @Field({ nullable: true })
+  confirmPassword: string;
 }

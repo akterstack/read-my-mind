@@ -109,7 +109,13 @@ export default {
     };
   },
   methods: {
-    publish() {},
+    publish() {
+      const loggedInUser = this.$store.state.auth.user;
+      if (!loggedInUser || !loggedInUser.id) {
+        this.$store.state.redirectTo = this.$router.currentRoute.path;
+        this.$router.push({ name: 'login' });
+      }
+    },
     start() {},
   },
 };

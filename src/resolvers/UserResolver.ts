@@ -27,7 +27,10 @@ export class UserResolver {
   }
 
   @Mutation(() => String)
-  async signup(@Args() { username, password }: AuthParams) {
+  async signup(@Args() { username, password, confirmPassword }: AuthParams) {
+    if (password !== confirmPassword) {
+      throw Error('Password mismatched.');
+    }
     const existingUser = await this.userRepository.findOne({ username });
     if (existingUser) {
       throw Error('Username has been already taken.');
