@@ -12,7 +12,8 @@
     "no-implicit-dependencies": [true, "dev", ["@"]],
     "no-submodule-imports": [true, "@/resolvers"],
     "object-literal-sort-keys": false,
-    "member-access": [true, "no-public"]
+    "member-access": [true, "no-public"],
+    "interface-name": false
   },
   "rulesDirectory": [
     "tslint-plugin-prettier"

@@ -1,12 +1,13 @@
+import { Context } from '@/resolvers/helpers/Context';
 import { MiddlewareInterface, NextFn, ResolverData } from 'type-graphql';
 
 const isPublicApi = ({ info }) => {
-  const api = `${info.parentType.name}.${info.fieldName}`;
-  return api === 'Mutation.signup' || api === 'Query.login';
+  const api = `${info.parentType}.${info.fieldName}`;
+  return api === 'Mutation.signup' || api === 'Mutation.login';
 };
 
-export class AuthMiddleware implements MiddlewareInterface {
-  async use({ context, info }: ResolverData<any>, next: NextFn) {
+export class AuthMiddleware implements MiddlewareInterface<Context> {
+  async use({ context, info }: ResolverData<Context>, next: NextFn) {
     if (context.user || isPublicApi({ info })) {
       return next();
     }

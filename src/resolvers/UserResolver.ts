@@ -1,10 +1,10 @@
 import { User } from '@/entities';
-import { Id } from '@/resolvers/helpers';
 import { AuthParams } from '@/resolvers/helpers/AuthParams';
+import { Context } from '@/resolvers/helpers/Context';
+import { UserLoginInfo } from '@/resolvers/helpers/UserLoginInfo';
 import { UserService } from '@/services';
 import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import { Args, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
 import { Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
@@ -16,8 +16,16 @@ export class UserResolver {
   ) {}
 
   @Query(() => User)
-  user(@Args() { id }: Id) {
+  user(@Arg('id', () => Int) id: number) {
     return this.userRepository.findOne(id);
+  }
+
+  @Query(() => UserLoginInfo)
+  userLoginInfo(@Ctx() { user }: Context) {
+    const info = new UserLoginInfo();
+    info.id = user.id;
+    info.username = user.username;
+    return info;
   }
 
   @Mutation(() => String)
@@ -32,12 +40,10 @@ export class UserResolver {
       password: await bcrypt.hash(password, 10),
     });
 
-    return jwt.sign({ id: user.id, email: user.email }, 'Calipsa', {
-      expiresIn: 60 * 60,
-    });
+    return this.userService.generateToken(user);
   }
 
-  @Query(() => String)
+  @Mutation(() => String)
   async login(@Args() { username, password }: AuthParams) {
     const user = await this.userRepository.findOne({ username });
     if (!user) {
@@ -48,8 +54,6 @@ export class UserResolver {
     if (!valid) {
       throw new Error('Incorrect password');
     }
-
-    // return json web token
-    return jwt.sign({ id: user.id }, 'Calipsa', { expiresIn: '1d' });
+    return this.userService.generateToken(user);
   }
 }

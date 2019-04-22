@@ -36,7 +36,9 @@ async function bootstrap() {
   app.use(
     path,
     jwt({
-      secret: 'Calipsa',
+      secret: process.env.JWT_SECRET,
+      // signup/login api should be public
+      // auth check will be done in type-graphql middleware (AuthMiddleware)
       credentialsRequired: false,
     })
   );
@@ -44,9 +46,9 @@ async function bootstrap() {
   server.applyMiddleware({ app, path });
 
   // Start the server
-  app.listen({ port: 3000 }, () => {
+  app.listen({ port: 4000 }, () => {
     console.log(
-      `🚀 Server ready at http://localhost:3000${server.graphqlPath}`
+      `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
     );
   });
 }
