@@ -1,17 +1,20 @@
-import axios from 'axios';
 import { GraphQLError } from 'graphql';
+import Axios from 'axios';
 
-const api = axios.create({
+export const http = Axios.create({
   baseURL: 'http://localhost:4000/api',
   timeout: 10000,
 });
 
-export async function execute(query, variables) {
+const token = localStorage.getItem('token');
+if (token) {
+  http.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
+
+export async function executeGraphQL(query, variables) {
   console.debug(query);
   console.debug(variables);
-  const token = localStorage.getItem('token');
-  api.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
-  const res = await api.post('', {
+  const res = await http.post('', {
     query,
     variables,
   });
@@ -22,4 +25,4 @@ export async function execute(query, variables) {
   return res.data.data;
 }
 
-export default api;
+export default http;

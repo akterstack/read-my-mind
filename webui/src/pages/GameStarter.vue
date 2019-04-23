@@ -108,14 +108,15 @@ export default {
       maxHint: 20,
     };
   },
+  created() {
+    const loggedInUser = this.$store.state.auth.user;
+    if (!loggedInUser || !loggedInUser.id) {
+      this.$store.state.redirectTo = this.$router.currentRoute.path;
+      this.$router.push({ name: 'login' });
+    }
+  },
   methods: {
-    publish() {
-      const loggedInUser = this.$store.state.auth.user;
-      if (!loggedInUser || !loggedInUser.id) {
-        this.$store.state.redirectTo = this.$router.currentRoute.path;
-        this.$router.push({ name: 'login' });
-      }
-    },
+    publish() {},
     start() {},
   },
 };

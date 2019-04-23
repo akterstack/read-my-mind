@@ -1,10 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import { Home, CreateGame, Signup, Login } from './pages';
+import store from './store';
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
@@ -12,16 +13,25 @@ export default new Router({
       path: '/',
       name: 'home',
       component: Home,
+      meta: {
+        public: true,
+      },
     },
     {
       path: '/signup',
       name: 'signup',
       component: Signup,
+      meta: {
+        public: true,
+      },
     },
     {
       path: '/login',
       name: 'login',
       component: Login,
+      meta: {
+        public: true,
+      },
     },
     {
       path: '/game/create',
@@ -39,3 +49,17 @@ export default new Router({
     },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  if (
+    to.matched.some(record => !record.meta.public) &&
+    !store.getters['auth/isLoggedIn']
+  ) {
+    store.commit('redirectTo', to.path);
+    next('/login');
+    return;
+  }
+  next();
+});
+
+export default router;

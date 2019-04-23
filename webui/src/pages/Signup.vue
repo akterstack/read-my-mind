@@ -60,7 +60,7 @@ export default {
   },
   methods: {
     createAccount() {
-      this.$store.dispatch('signup', {
+      this.$store.dispatch('auth/signup', {
         username: this.username,
         password: this.password,
         confirmPassword: this.confirmPassword,

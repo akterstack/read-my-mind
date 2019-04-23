@@ -21,7 +21,7 @@ export default {
   data() {
     return {
       host: {
-        title: 'Host',
+        title: 'Be Host',
         subtitle: 'Give Answers',
         description:
           'Guess your precious word and give answers to your players\' "yes/no" questions',
@@ -31,7 +31,7 @@ export default {
           'https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight2&accessoriesType=Kurt&hairColor=PastelPink&facialHairType=Blank&clotheType=BlazerSweater&eyeType=Wink&eyebrowType=UpDown&mouthType=Smile&skinColor=Yellow',
       },
       player: {
-        title: 'Player',
+        title: 'Be Player',
         avatar:
           'https://avataaars.io/?avatarStyle=Circle&topType=ShortHairShortCurly&accessoriesType=Round&hairColor=Brown&facialHairType=Blank&clotheType=Hoodie&clotheColor=PastelOrange&eyeType=Surprised&eyebrowType=Default&mouthType=Default&skinColor=Light',
         subtitle: 'Ask Questions',

@@ -7,20 +7,24 @@
       <v-layout justify-center>
         <v-toolbar-title>Read My Mind</v-toolbar-title>
       </v-layout>
-      <v-toolbar-items class="hidden-sm-and-down">
-        <v-icon large color="grey lighten-1">help_outline</v-icon>
-      </v-toolbar-items>
+      <UserMenu />
     </v-toolbar>
     <v-content>
-      <router-view />
+      <transition>
+        <router-view />
+      </transition>
     </v-content>
   </v-app>
 </template>
 
 <script>
+import { UserMenu } from '@/components';
+
 export default {
   name: 'App',
-  components: {},
+  components: {
+    UserMenu,
+  },
   data() {
     return {
       //
