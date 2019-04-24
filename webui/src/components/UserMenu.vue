@@ -5,49 +5,35 @@
       :close-on-content-click="false"
       :nudge-width="200"
       offset-x
+      transition="slide-x-reverse-transition"
     >
       <template v-slot:activator="{ on }">
-        <v-icon color="primary" dark v-on="on">
-          account_circle
-        </v-icon>
+        <v-btn dark icon v-on="on">
+          <Avatar />
+        </v-btn>
       </template>
       <v-card>
         <v-list>
-          <v-list-tile avatar>
+          <v-list-tile>
             <v-list-tile-avatar>
               <Avatar />
             </v-list-tile-avatar>
 
             <v-list-tile-content>
-              <v-list-tile-title>John Leider</v-list-tile-title>
-              <v-list-tile-sub-title
-                >Founder of Vuetify.js</v-list-tile-sub-title
-              >
+              <v-list-tile-title>{{ title() }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ subtitle() }}</v-list-tile-sub-title>
             </v-list-tile-content>
-
-            <v-list-tile-action>
-              <v-btn :class="fav ? 'red--text' : ''" icon @click="fav = !fav">
-                <v-icon>favorite</v-icon>
-              </v-btn>
-            </v-list-tile-action>
           </v-list-tile>
         </v-list>
 
         <v-divider></v-divider>
 
         <v-list>
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-switch v-model="message" color="purple"></v-switch>
-            </v-list-tile-action>
-            <v-list-tile-title>Enable messages</v-list-tile-title>
+          <v-list-tile @click="hostHistory" prepend-icon="accessible_forward">
+            <v-list-tile-title>My host history</v-list-tile-title>
           </v-list-tile>
-
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-switch v-model="hints" color="purple"></v-switch>
-            </v-list-tile-action>
-            <v-list-tile-title>Enable hints</v-list-tile-title>
+          <v-list-tile @click="playerHistory">
+            <v-list-tile-title>My player history</v-list-tile-title>
           </v-list-tile>
         </v-list>
 
@@ -85,13 +71,22 @@ export default {
     };
   },
   methods: {
+    title() {
+      return this.$store.state.auth.user.username || 'Hello, Guest!';
+    },
+    subtitle() {
+      return this.isLoggedIn() ? 'Online' : 'Please login';
+    },
     isLoggedIn() {
-      return this.$store.getters['auth/isLoggedIn'];
+      return this.$store.state.auth.user;
     },
     logout() {
       this.menu = false;
       this.$store.dispatch('auth/logout');
+      this.$router.push({ name: 'login' });
     },
+    hostHistory() {},
+    playerHistory() {},
   },
 };
 </script>

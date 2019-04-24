@@ -4,12 +4,8 @@ export default {
   namespaced: true,
   state: {
     status: '',
-    token: localStorage.getItem('token') || '',
-    user: {},
-  },
-  getters: {
-    isLoggedIn: state => !!state.token,
-    status: state => state.status,
+    token: localStorage.getItem('token'),
+    user: false,
   },
   actions: {
     async signup(
@@ -78,6 +74,7 @@ export default {
     },
     logout({ commit }) {
       localStorage.removeItem('token');
+      http.defaults.headers.common['Authorization'] = '';
       commit('logout');
     },
   },
@@ -96,7 +93,7 @@ export default {
     logout(state) {
       state.status = '';
       state.token = '';
-      state.user = '';
+      state.user = false;
     },
   },
 };

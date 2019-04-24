@@ -32,10 +32,32 @@ const router = new Router({
       meta: {
         public: true,
       },
+      beforeEnter(to, from, next) {
+        if (store.state.auth.user) {
+          next(store.state.redirectTo || '/');
+        }
+        next();
+      },
+    },
+    {
+      path: '/logout',
+      name: 'logout',
+      component: Login,
+      meta: {
+        public: true,
+      },
+      beforeEnter(to, from, next) {
+        store.dispatch('auth/logout');
+        next({ name: 'login' });
+      },
     },
     {
       path: '/game/create',
-      name: 'createGame',
+      name: 'game',
+      component: CreateGame,
+    },
+    {
+      path: '/game/history/(host|player)',
       component: CreateGame,
     },
     {
@@ -53,7 +75,7 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (
     to.matched.some(record => !record.meta.public) &&
-    !store.getters['auth/isLoggedIn']
+    !store.state.auth.user
   ) {
     store.commit('redirectTo', to.path);
     next('/login');

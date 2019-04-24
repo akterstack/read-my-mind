@@ -1,5 +1,5 @@
 <template>
-  <span>
+  <span class="v-avatar">
     <img v-if="username()" :src="avatarSrc()" :alt="username()" />
     <v-icon v-else color="primary" dark>
       account_circle
@@ -13,7 +13,7 @@ export default {
       return this.$store.state.auth.user.username;
     },
     avatarSrc() {
-      return `http://i.pravatar.cc/50?u=${this.username}`;
+      return `http://i.pravatar.cc/50?u=${this.username()}`;
     },
   },
 };

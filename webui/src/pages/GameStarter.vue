@@ -4,13 +4,9 @@
       <v-flex xs12 sm8 md6>
         <v-stepper v-model="el">
           <v-stepper-header>
-            <v-stepper-step :complete="el > 1" step="1"
-              >Set Word</v-stepper-step
-            >
+            <v-stepper-step :complete="el > 1" step="1">Word</v-stepper-step>
             <v-divider></v-divider>
-            <v-stepper-step :complete="el > 2" step="2"
-              >Change Options</v-stepper-step
-            >
+            <v-stepper-step :complete="el > 2" step="2">Options</v-stepper-step>
             <v-divider></v-divider>
             <v-stepper-step step="3">Publish/Start</v-stepper-step>
           </v-stepper-header>
@@ -24,6 +20,8 @@
                     label="Your precious word"
                     prepend-inner-icon="place"
                     v-model="word"
+                    @keydown.enter="el = 2"
+                    autofocus
                   ></v-text-field>
                 </v-flex>
               </v-layout>
@@ -44,7 +42,8 @@
                   <v-text-field
                     type="number"
                     v-model="maxPlayer"
-                    value="1"
+                    autofocus
+                    @keydown.enter="el = 3"
                   ></v-text-field>
                   <span class="caption"
                     >Maximum number of players can join</span
@@ -59,7 +58,7 @@
                   <v-text-field
                     type="number"
                     v-model="maxHint"
-                    value="20"
+                    @keydown.enter="el = 3"
                   ></v-text-field>
                   <span class="caption"
                     >Maximum yes/no question a player can ask</span
@@ -103,21 +102,50 @@ export default {
   data() {
     return {
       el: 0,
-      word: null,
-      maxPlayer: 1,
-      maxHint: 20,
     };
   },
-  created() {
-    const loggedInUser = this.$store.state.auth.user;
-    if (!loggedInUser || !loggedInUser.id) {
-      this.$store.state.redirectTo = this.$router.currentRoute.path;
-      this.$router.push({ name: 'login' });
-    }
+  computed: {
+    word: {
+      get() {
+        return this.$store.state.game.word || '';
+      },
+      set(word) {
+        this.$store.commit('setGame', { word });
+      },
+    },
+    maxPlayer: {
+      get() {
+        return this.$store.state.game.maxPlayer;
+      },
+      set(maxPlayer) {
+        this.$store.commit('setGame', { maxPlayer });
+      },
+    },
+    maxHint: {
+      get() {
+        return this.$store.state.game.maxHint;
+      },
+      set(maxHint) {
+        this.$store.commit('setGame', { maxHint });
+      },
+    },
   },
   methods: {
-    publish() {},
-    start() {},
+    save() {
+      this.$emit('before:game_create', this.$store.state.game);
+      this.$store.dispatch('createGame');
+      this.$emit('game_create', this.$store.state.game);
+    },
+    publish() {
+      this.$emit('before:game_publish', this.$store.state.game);
+      this.$store.dispatch('createGame', { status: 'published' });
+      this.$emit('game_publish', this.$store.state.game);
+    },
+    start() {
+      this.$emit('before:game_start', this.$store.state.game);
+      this.$store.dispatch('startGame');
+      this.$emit('game_start', this.$store.state.game);
+    },
   },
 };
 </script>

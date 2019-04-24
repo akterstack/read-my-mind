@@ -16,9 +16,21 @@ export class GameResolver {
   }
 
   @Mutation(() => Game)
-  async gameCreate({ game }): Promise<Game> {
+  async gameCreate(
+    @Arg('word') word: string,
+    @Arg('maxPlayer', () => Int, { nullable: true }) maxPlayer: number,
+    @Arg('maxHint', () => Int, { nullable: true }) maxHint: number,
+    @Arg('status', { nullable: true }) status: string,
+    @Arg('hostId', () => Int) hostId: number
+  ): Promise<Game> {
     // @ts-ignore
-    const gameUpToDate: Game = await this.gameService.save(game);
+    const gameUpToDate: Game = await this.gameService.save({
+      word,
+      maxPlayer,
+      maxHint,
+      status,
+      host: { id: hostId },
+    });
     return this.gameRepository.findOne(gameUpToDate.id);
   }
 

@@ -1,5 +1,5 @@
-import { UserLoginInfo } from '@/resolvers/helpers';
+import { LoginInfo } from '@/resolvers/helpers';
 
 export interface Context {
-  user?: UserLoginInfo;
+  user?: LoginInfo;
 }

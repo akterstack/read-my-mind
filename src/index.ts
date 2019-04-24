@@ -2,6 +2,7 @@ import 'reflect-metadata';
 // tslint:disable ordered-imports
 import { GameResolver, UserResolver } from '@/resolvers';
 import * as express from 'express';
+import * as cors from 'cors';
 import * as jwt from 'express-jwt';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
@@ -22,6 +23,13 @@ async function bootstrap() {
 
   const path = '/api';
   const app = express();
+  if (process.env.NODE_ENV === 'development') {
+    app.use(
+      cors({
+        origin: 'http://localhost:8080',
+      })
+    );
+  }
   // Create GraphQL server
   const server = new ApolloServer({
     schema,

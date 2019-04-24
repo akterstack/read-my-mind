@@ -1,3 +1,4 @@
+import { GameStatus } from '@/GameStatus';
 import { IsNotEmpty, Max } from 'class-validator';
 import { Field, ID, ObjectType } from 'type-graphql';
 import {
@@ -17,8 +18,8 @@ export class Game {
   id: number;
 
   @Field()
-  @IsNotEmpty()
   @Column()
+  @IsNotEmpty()
   word: string;
 
   @Field()
@@ -32,8 +33,9 @@ export class Game {
   maxHint: number;
 
   @Field()
-  @Column({ default: true })
-  isPublic: boolean;
+  @Column({ default: GameStatus.CREATED })
+  @IsNotEmpty()
+  status: GameStatus;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.hostOfGames, {

@@ -14,7 +14,7 @@ export class UserService {
 
   generateToken({ id, username }: User): string {
     return jwt.sign({ id, username }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
+      expiresIn: '30d',
     });
   }
 }
