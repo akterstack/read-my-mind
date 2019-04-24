@@ -2,8 +2,8 @@
   <div class="text-xs-center">
     <v-menu
       v-model="menu"
-      :close-on-content-click="false"
-      :nudge-width="200"
+      :close-on-content-click="true"
+      :nudge-width="250"
       offset-x
       transition="slide-x-reverse-transition"
     >
@@ -29,11 +29,21 @@
         <v-divider></v-divider>
 
         <v-list>
-          <v-list-tile @click="hostHistory" prepend-icon="accessible_forward">
-            <v-list-tile-title>My host history</v-list-tile-title>
+          <v-list-tile to="/game/hosted">
+            <v-list-tile-avatar>
+              <v-icon>card_travel</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>My hosted games</v-list-tile-title>
+            </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile @click="playerHistory">
-            <v-list-tile-title>My player history</v-list-tile-title>
+          <v-list-tile to="/game/played">
+            <v-list-tile-avatar>
+              <v-icon>rowing</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>My played games</v-list-tile-title>
+            </v-list-tile-content>
           </v-list-tile>
         </v-list>
 
@@ -85,8 +95,6 @@ export default {
       this.$store.dispatch('auth/logout');
       this.$router.push({ name: 'login' });
     },
-    hostHistory() {},
-    playerHistory() {},
   },
 };
 </script>

@@ -37,6 +37,14 @@ export class Game {
   @IsNotEmpty()
   status: GameStatus;
 
+  @Field()
+  @Column({ default: new Date() })
+  created: Date = new Date();
+
+  @Field()
+  @Column({ default: new Date() })
+  updated: Date = new Date();
+
   @Field(() => User)
   @ManyToOne(() => User, user => user.hostOfGames, {
     nullable: false,

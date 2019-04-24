@@ -18,7 +18,7 @@ export default new Store({
     },
   },
   actions: {
-    async createGame({ state, commit }, { status = 'created' }) {
+    async createGame({ state, commit }) {
       const data = await executeGraphQL(
         `
           mutation CreateGame(
@@ -40,7 +40,7 @@ export default new Store({
             }
           }
         `,
-        { ...state.game, status, hostId: state.auth.user.id }
+        { ...state.game, hostId: state.auth.user.id }
       );
       commit('setGame', data);
     },

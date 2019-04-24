@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import { Home, CreateGame, Signup, Login } from './pages';
+import {Home, GameNew, Signup, Login, Game, GameHosted, GamePlayed} from './pages';
 import store from './store';
 
 Vue.use(Router);
@@ -52,13 +52,23 @@ const router = new Router({
       },
     },
     {
-      path: '/game/create',
+      path: '/game',
       name: 'game',
-      component: CreateGame,
-    },
-    {
-      path: '/game/history/(host|player)',
-      component: CreateGame,
+      component: Game,
+      children: [
+        {
+          path: 'new',
+          component: GameNew,
+        },
+        {
+          path: 'hosted',
+          component: GameHosted,
+        },
+        {
+          path: 'played',
+          component: GamePlayed,
+        },
+      ],
     },
     {
       path: '/about',

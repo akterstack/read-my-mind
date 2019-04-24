@@ -137,8 +137,9 @@ export default {
       this.$emit('game_create', this.$store.state.game);
     },
     publish() {
+      this.$store.commit('setGame', { status: 'published' });
       this.$emit('before:game_publish', this.$store.state.game);
-      this.$store.dispatch('createGame', { status: 'published' });
+      this.$store.dispatch('createGame');
       this.$emit('game_publish', this.$store.state.game);
     },
     start() {

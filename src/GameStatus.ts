@@ -2,6 +2,6 @@ export enum GameStatus {
   CREATED = 'created',
   PUBLISED = 'published',
   JOINED = 'joined',
-  RUNNING = 'running',
+  STARTED = 'started',
   FINISHED = 'finished',
 }

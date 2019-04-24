@@ -19,7 +19,8 @@ export async function executeGraphQL(query, variables) {
     variables,
   });
   if (res.data.errors) {
-    console.debug(`GraphQL Error ${res.data.errors}`);
+    console.debug(`GraphQL Error`);
+    console.log(res.data.errors);
     throw new GraphQLError(res.data.errors);
   }
   return res.data.data;
