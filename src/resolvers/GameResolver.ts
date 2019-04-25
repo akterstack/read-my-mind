@@ -16,13 +16,10 @@ export class GameResolver {
     return this.gameRepository.findOne(id);
   }
 
-  // @Query(() => Game)
-  // gameInSession(@Ctx() user: LoggedInUser): Promise<Game> {
-  //   const hostedGameInSession =
-  //   if (!hostedGameInSession) {
-  //     var
-  //   }
-  // }
+  @Query(() => Game)
+  async gameInSession(@Ctx() { user }: Context): Promise<Game> {
+    return this.gameService.gameInSession(user);
+  }
 
   @Mutation(() => Game)
   async gameCreate(
