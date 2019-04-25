@@ -1,5 +1,5 @@
 import { User } from '@/entities';
-import { AuthParams, Context, LoginInfo } from '@/resolvers/helpers';
+import { AuthParams, Context, LoggedInUser } from '@/resolvers/helper';
 import { UserService } from '@/services';
 import * as bcrypt from 'bcrypt';
 import { Arg, Args, Ctx, Int, Mutation, Query, Resolver } from 'type-graphql';
@@ -18,9 +18,9 @@ export class UserResolver {
     return this.userRepository.findOne(id);
   }
 
-  @Query(() => LoginInfo)
+  @Query(() => LoggedInUser)
   userLoginInfo(@Ctx() { user }: Context) {
-    const info = new LoginInfo();
+    const info = new LoggedInUser();
     info.id = user.id;
     info.username = user.username;
     return info;

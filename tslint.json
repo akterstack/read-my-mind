@@ -10,7 +10,7 @@
     "prettier": true,
     "no-console": false,
     "no-implicit-dependencies": [true, "dev", ["@"]],
-    "no-submodule-imports": [true, "@/resolvers"],
+    "no-submodule-imports": [true, "@/entities/helper", "@/resolvers/helper"],
     "object-literal-sort-keys": false,
     "member-access": [true, "no-public"],
     "interface-name": false

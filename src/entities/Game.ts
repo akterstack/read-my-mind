@@ -1,11 +1,15 @@
-import { GameStatus } from '@/GameStatus';
+import { GameHint } from '@/entities';
+import { GameStatus } from '@/entities/helper';
 import { IsNotEmpty, Max } from 'class-validator';
 import { Field, ID, ObjectType } from 'type-graphql';
 import {
   Column,
   Entity,
+  Index,
+  JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
@@ -33,9 +37,31 @@ export class Game {
   maxHint: number;
 
   @Field()
-  @Column({ default: GameStatus.CREATED })
   @IsNotEmpty()
+  @Index()
+  @Column({ default: GameStatus.CREATED })
   status: GameStatus;
+
+  @Field(() => User)
+  @Index()
+  @ManyToOne(() => User)
+  winner: User;
+
+  @Field(() => User)
+  @Index()
+  @ManyToOne(() => User, user => user.hostOfGames, {
+    nullable: false,
+  })
+  host: User;
+
+  @Field(() => [User])
+  @ManyToMany(() => User, user => user.playerOfGames)
+  @JoinTable()
+  players: User[];
+
+  @Field(() => [GameHint])
+  @OneToMany(() => GameHint, hint => hint.game)
+  hints: [GameHint];
 
   @Field()
   @Column({ default: new Date() })
@@ -44,14 +70,4 @@ export class Game {
   @Field()
   @Column({ default: new Date() })
   updated: Date = new Date();
-
-  @Field(() => User)
-  @ManyToOne(() => User, user => user.hostOfGames, {
-    nullable: false,
-  })
-  host: User;
-
-  @Field(() => [User])
-  @ManyToMany(() => User, user => user.playerOfGames)
-  players: User[];
 }

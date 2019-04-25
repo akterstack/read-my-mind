@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from 'type-graphql';
 import {
   Column,
-  Entity,
+  Entity, Index,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -18,6 +18,7 @@ export class User {
   id: number;
 
   @Field()
+  @Index()
   @Column()
   username: string;
 

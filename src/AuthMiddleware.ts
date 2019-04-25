@@ -1,4 +1,4 @@
-import { Context } from '@/resolvers/helpers';
+import { Context } from '@/resolvers/helper';
 import { MiddlewareInterface, NextFn, ResolverData } from 'type-graphql';
 
 const isPublicApi = ({ info }) => {
