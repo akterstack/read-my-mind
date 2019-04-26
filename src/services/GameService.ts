@@ -19,14 +19,12 @@ export class GameService {
       union select g.id from game g
       inner join game_players_user gu on gu."gameId" = g.id
       inner join "user" u on u.id = gu."userId"
-      where g.status in ('published', 'started') and "userId" = $2
+      where g.status in ('published', 'started') and "userId" = $1
       `,
-      [user.id, user.id]
+      [user.id]
     );
     if (gameInSession.length) {
-      const game = await this.gameRepository.findOne(gameInSession[0]);
-      console.log(game);
-      return game;
+      return this.gameRepository.findOne(gameInSession[0]);
     }
     return null;
   }

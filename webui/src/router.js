@@ -7,6 +7,7 @@ import {
   Login,
   Game,
   GameHosted,
+  GameList,
   GamePlayed,
   GameSession,
 } from './pages';
@@ -32,14 +33,16 @@ const router = new Router({
             query {
               gameInSession {
                 id
-                host {
-                  id
-                }
               }
             }
-          `
+          `,
+          () => {
+            console.debug('No game in session');
+          }
         );
-        console.log(data);
+        if (data) {
+          next('/game/session');
+        }
         next();
       },
     },
@@ -82,6 +85,10 @@ const router = new Router({
       name: 'game',
       component: Game,
       children: [
+        {
+          path: 'list',
+          component: GameList,
+        },
         {
           path: 'new',
           component: GameNew,

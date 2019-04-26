@@ -13,9 +13,20 @@
     </v-toolbar>
     <v-content>
       <transition>
-        <router-view />
+        <router-view @notify="notify" />
       </transition>
     </v-content>
+    <v-snackbar
+      v-model="notification.show"
+      :color="notification.color"
+      :timeout="notification.timeout"
+      top
+    >
+      {{ notification.message }}
+      <v-btn dark flat @click="notification.show = false">
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -29,8 +40,16 @@ export default {
   },
   data() {
     return {
-      //
+      notification: {
+        show: false,
+        message: '',
+        color: 'error',
+        timeout: 6000,
+      },
     };
+  },
+  mounted() {
+    this.$root.$on('notify', this.notify);
   },
   methods: {
     showBackNav() {
@@ -38,6 +57,9 @@ export default {
     },
     goBack() {
       this.$router.go(-1);
+    },
+    notify(notification) {
+      this.notification = { ...this.notification, show: true, ...notification };
     },
   },
 };

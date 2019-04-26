@@ -6,16 +6,23 @@ import { auth } from './modules';
 
 Vue.use(Vuex);
 
+function initGame() {
+  return {
+    status: '',
+    word: '',
+    maxPlayer: 1,
+    maxHint: 20,
+  };
+}
+
 export default new Store({
   plugins: [persistState()],
+  modules: {
+    auth,
+  },
   state: {
     redirectTo: '',
-    game: {
-      status: '',
-      word: '',
-      maxPlayer: 1,
-      maxHint: 20,
-    },
+    game: initGame(),
   },
   actions: {
     async createGame({ state, commit }) {
@@ -40,7 +47,7 @@ export default new Store({
         `,
         state.game
       );
-      commit('setGame', data);
+      commit('setGame', data.gameCreate);
     },
   },
   mutations: {
@@ -50,8 +57,8 @@ export default new Store({
     setGame(state, game) {
       state.game = { ...state.game, ...game };
     },
-  },
-  modules: {
-    auth,
+    clearGame(state) {
+      state.game = initGame();
+    },
   },
 });

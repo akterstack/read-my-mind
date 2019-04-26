@@ -120,25 +120,37 @@ export default {
     ...mapGetterSetter(['word', 'maxPlayer', 'maxHint']),
   },
   methods: {
-    save() {
-      this.$emit('before:game_create', this.$store.state.game);
-      this.$store.dispatch('createGame');
-      this.$emit('game_create', this.$store.state.game);
+    async save() {
+      this.$emit('beforeGameCreate', this.$store.state.game);
+      await this.$store.dispatch('createGame');
+      this.$store.commit('clearGame');
+      this.$emit('gameCreate', this.$store.state.game);
       this.$router.push('/game/list');
     },
-    publish() {
+    async publish() {
       this.$store.commit('setGame', { status: 'published' });
-      this.$emit('before:game_publish', this.$store.state.game);
+      await this.$emit('beforeGamePublish', this.$store.state.game);
       this.$store.dispatch('createGame');
-      this.$emit('game_publish', this.$store.state.game);
+      this.$store.commit('clearGame');
+      this.$emit('gamePublish', this.$store.state.game);
       this.$router.push('/game/hosted');
     },
-    start() {
-      this.$store.commit('setGame', { status: 'started' });
-      this.$emit('before:game_start', this.$store.state.game);
-      this.$store.dispatch('createGame');
-      this.$emit('game_start', this.$store.state.game);
-      this.$router.push('/game/session');
+    async start() {
+      try {
+        this.$store.commit('setGame', { status: 'started' });
+        this.$emit('beforeGameStart', this.$store.state.game);
+        await this.$store.dispatch('createGame');
+        this.$store.commit('clearGame');
+        this.$emit('gameStart', this.$store.state.game);
+      } catch (e) {
+        if (e.length) {
+          e.forEach(({ message }) => {
+            this.$root.$emit('notify', {
+              message,
+            });
+          });
+        }
+      }
     },
   },
 };

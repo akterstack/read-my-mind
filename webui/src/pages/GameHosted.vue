@@ -33,7 +33,7 @@ export default {
     };
   },
   async beforeMount() {
-    const { hostedGames } = await executeGraphQL(`
+    const data = await executeGraphQL(`
       query {
         hostedGames {
           id
@@ -46,7 +46,7 @@ export default {
         }
       }
     `);
-    this.games = hostedGames;
+    this.games = data.hostedGames;
   },
 };
 </script>

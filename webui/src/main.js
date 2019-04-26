@@ -7,6 +7,17 @@ import VeeValidate from 'vee-validate';
 import './registerServiceWorker';
 
 Vue.config.productionTip = false;
+Vue.config.errorHandler = (err, vm, info) => {
+  console.log(vm);
+  console.log(err);
+  console.log(info);
+};
+Vue.config.warnHandler = (err, vm, info) => {
+  console.log(vm);
+  console.log(err);
+  console.log(info);
+};
+
 Vue.use(VeeValidate);
 
 new Vue({

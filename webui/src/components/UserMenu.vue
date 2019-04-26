@@ -9,14 +9,14 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn dark icon v-on="on">
-          <Avatar />
+          <Avatar :username="$store.state.auth.user.username" />
         </v-btn>
       </template>
       <v-card>
         <v-list>
           <v-list-tile>
             <v-list-tile-avatar>
-              <Avatar />
+              <Avatar :username="$store.state.auth.user.username" />
             </v-list-tile-avatar>
 
             <v-list-tile-content>

@@ -1,6 +1,7 @@
 export { default as Home } from './Home';
 export { default as Game } from './Game';
 export { default as GameHosted } from './GameHosted';
+export { default as GameList } from './GameList';
 export { default as GamePlayed } from './GamePlayed';
 export { default as GameNew } from './GameNew';
 export { default as GameSession } from './GameSession';
