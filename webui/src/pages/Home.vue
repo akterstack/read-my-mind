@@ -25,7 +25,7 @@ export default {
         subtitle: 'Give Answers',
         description:
           'Guess your precious word and give answers to your players\' "yes/no" questions',
-        link: '/game/create',
+        link: '/game/new',
         color: 'purple darken-1',
         avatar:
           'https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight2&accessoriesType=Kurt&hairColor=PastelPink&facialHairType=Blank&clotheType=BlazerSweater&eyeType=Wink&eyebrowType=UpDown&mouthType=Smile&skinColor=Yellow',

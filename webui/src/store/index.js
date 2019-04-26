@@ -26,21 +26,19 @@ export default new Store({
             $maxPlayer: Int
             $maxHint: Int
             $status: String
-            $hostId: Int!
           ) {
             gameCreate(
               word: $word
               maxPlayer: $maxPlayer
               maxHint: $maxHint
               status: $status
-              hostId: $hostId
             ) {
               id
               status
             }
           }
         `,
-        { ...state.game, hostId: state.auth.user.id }
+        state.game
       );
       commit('setGame', data);
     },

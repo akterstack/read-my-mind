@@ -1,7 +1,17 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import {Home, GameNew, Signup, Login, Game, GameHosted, GamePlayed} from './pages';
+import {
+  Home,
+  GameNew,
+  Signup,
+  Login,
+  Game,
+  GameHosted,
+  GamePlayed,
+  GameSession,
+} from './pages';
 import store from './store';
+import { executeGraphQL } from '@/http';
 
 Vue.use(Router);
 
@@ -15,6 +25,22 @@ const router = new Router({
       component: Home,
       meta: {
         public: true,
+      },
+      async beforeEnter(to, from, next) {
+        const data = await executeGraphQL(
+          `
+            query {
+              gameInSession {
+                id
+                host {
+                  id
+                }
+              }
+            }
+          `
+        );
+        console.log(data);
+        next();
       },
     },
     {
@@ -67,6 +93,10 @@ const router = new Router({
         {
           path: 'played',
           component: GamePlayed,
+        },
+        {
+          path: 'session',
+          component: GameSession,
         },
       ],
     },

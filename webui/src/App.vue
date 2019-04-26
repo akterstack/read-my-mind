@@ -5,7 +5,9 @@
         <v-icon>arrow_back</v-icon>
       </v-toolbar-side-icon>
       <v-layout justify-center>
-        <v-toolbar-title>Read My Mind</v-toolbar-title>
+        <v-toolbar-title>
+          <router-link to="/">Read My Mind</router-link>
+        </v-toolbar-title>
       </v-layout>
       <UserMenu />
     </v-toolbar>

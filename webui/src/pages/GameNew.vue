@@ -1,14 +1,14 @@
 <template>
   <v-container fluid fill-height>
     <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md6>
+      <v-flex xs12 sm8 lg8 xl6>
         <v-stepper v-model="el">
           <v-stepper-header>
             <v-stepper-step :complete="el > 1" step="1">Word</v-stepper-step>
             <v-divider></v-divider>
             <v-stepper-step :complete="el > 2" step="2">Options</v-stepper-step>
             <v-divider></v-divider>
-            <v-stepper-step step="3">Publish/Start</v-stepper-step>
+            <v-stepper-step step="3">Start</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
@@ -76,14 +76,12 @@
             </v-stepper-content>
 
             <v-stepper-content step="3">
-              <v-card class="mb-5" color="lime darker-1" height="200px">
-                <v-card-title>Start!</v-card-title>
-              </v-card>
+              <v-btn color="success" large @click="start">Start Now!</v-btn>
               <StepperActions
-                stepName="publish"
-                nextButtonLabel="Publish"
+                stepName="save"
+                nextButtonLabel="Save"
                 @stepBack="el = 2"
-                @stepNext="publish"
+                @stepNext="save"
               />
             </v-stepper-content>
           </v-stepper-items>
@@ -95,6 +93,20 @@
 <script>
 import { StepperActions } from '@/components';
 
+function mapGetterSetter(props) {
+  return props.reduce((propsGetterSetter, prop) => {
+    propsGetterSetter[prop] = {
+      get() {
+        return this.$store.state.game[prop];
+      },
+      set(val) {
+        this.$store.commit('setGame', { [prop]: val });
+      },
+    };
+    return propsGetterSetter;
+  }, {});
+}
+
 export default {
   components: {
     StepperActions,
@@ -105,47 +117,28 @@ export default {
     };
   },
   computed: {
-    word: {
-      get() {
-        return this.$store.state.game.word || '';
-      },
-      set(word) {
-        this.$store.commit('setGame', { word });
-      },
-    },
-    maxPlayer: {
-      get() {
-        return this.$store.state.game.maxPlayer;
-      },
-      set(maxPlayer) {
-        this.$store.commit('setGame', { maxPlayer });
-      },
-    },
-    maxHint: {
-      get() {
-        return this.$store.state.game.maxHint;
-      },
-      set(maxHint) {
-        this.$store.commit('setGame', { maxHint });
-      },
-    },
+    ...mapGetterSetter(['word', 'maxPlayer', 'maxHint']),
   },
   methods: {
     save() {
       this.$emit('before:game_create', this.$store.state.game);
       this.$store.dispatch('createGame');
       this.$emit('game_create', this.$store.state.game);
+      this.$router.push('/game/list');
     },
     publish() {
       this.$store.commit('setGame', { status: 'published' });
       this.$emit('before:game_publish', this.$store.state.game);
       this.$store.dispatch('createGame');
       this.$emit('game_publish', this.$store.state.game);
+      this.$router.push('/game/hosted');
     },
     start() {
+      this.$store.commit('setGame', { status: 'started' });
       this.$emit('before:game_start', this.$store.state.game);
-      this.$store.dispatch('startGame');
+      this.$store.dispatch('createGame');
       this.$emit('game_start', this.$store.state.game);
+      this.$router.push('/game/session');
     },
   },
 };

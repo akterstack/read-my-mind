@@ -23,6 +23,8 @@ export async function executeGraphQL(query, variables) {
     console.log(res.data.errors);
     throw new GraphQLError(res.data.errors);
   }
+  console.debug(`Graphql Response`);
+  console.debug(res.data);
   return res.data.data;
 }
 
