@@ -21,6 +21,23 @@ export class GameResolver {
     return this.gameService.gameInSession(user);
   }
 
+  @Query(() => [Game])
+  async hostedGames(@Ctx() { user }: Context): Promise<Game[]> {
+    return this.gameRepository.find({
+      relations: ['players'],
+      where: [
+        {
+          host: { id: user.id },
+        },
+      ],
+      order: {
+        updated: 'DESC',
+      },
+      take: 10,
+      cache: true,
+    });
+  }
+
   @Mutation(() => Game)
   async gameCreate(
     @Arg('word') word: string,

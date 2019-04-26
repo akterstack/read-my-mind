@@ -1,12 +1,7 @@
 import { Game } from '@/entities';
 import { LoggedInUser } from '@/resolvers/helper';
 import { Service } from 'typedi';
-import {
-  getManager,
-  Repository,
-  Transaction,
-  TransactionRepository,
-} from 'typeorm';
+import { Repository, Transaction, TransactionRepository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 @Service()
@@ -18,10 +13,10 @@ export class GameService {
   async gameInSession(user: LoggedInUser): Promise<Game> {
     const gameInSession = await this.gameRepository.query(
       `
-      select g.*
+      select g.id
       from game g
       where g.status = 'started' and g."hostId" = $1
-      union select g.* from game g
+      union select g.id from game g
       inner join game_players_user gu on gu."gameId" = g.id
       inner join "user" u on u.id = gu."userId"
       where g.status in ('published', 'started') and "userId" = $2
@@ -29,7 +24,9 @@ export class GameService {
       [user.id, user.id]
     );
     if (gameInSession.length) {
-      return getManager().create(Game, gameInSession[0]);
+      const game = await this.gameRepository.findOne(gameInSession[0]);
+      console.log(game);
+      return game;
     }
     return null;
   }

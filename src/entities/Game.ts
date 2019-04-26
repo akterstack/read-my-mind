@@ -51,6 +51,7 @@ export class Game {
   @Index()
   @ManyToOne(() => User, user => user.hostOfGames, {
     nullable: false,
+    eager: true,
   })
   host: User;
 
