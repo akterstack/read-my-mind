@@ -49,6 +49,29 @@ export default new Store({
       );
       commit('setGame', data.gameCreate);
     },
+    async updateGame({ commit }, { id, status }) {
+      const data = await executeGraphQL(
+        `
+          mutation StartGame(
+            $id: Int!
+            $status: String!
+          ) {
+            gameUpdate(
+              id: $id
+              status: $status
+            ) {
+              id
+              status
+            }
+          }
+        `,
+        {
+          id,
+          status,
+        }
+      );
+      commit('setGame', data.gameUpdate);
+    },
   },
   mutations: {
     redirectTo(state, path) {

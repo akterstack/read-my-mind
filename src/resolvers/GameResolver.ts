@@ -1,15 +1,16 @@
-import { Game } from '@/entities';
+import { Game, User } from '@/entities';
 import { GameStatus } from '@/entities/helper';
 import { Context } from '@/resolvers/helper';
 import { GameService } from '@/services';
 import { Arg, Ctx, Int, Mutation, Query } from 'type-graphql';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 export class GameResolver {
   constructor(
     private gameService: GameService,
-    @InjectRepository(Game) private readonly gameRepository: Repository<Game>
+    @InjectRepository(Game) private readonly gameRepository: Repository<Game>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>
   ) {}
 
   @Query(() => Game)
@@ -18,12 +19,13 @@ export class GameResolver {
   }
 
   @Query(() => [Game])
-  gameList(): Promise<Game[]> {
+  gamesToJoin(@Ctx() { user }: Context): Promise<Game[]> {
     return this.gameRepository.find({
-      relations: ['players'],
+      relations: ['host', 'players'],
       where: [
         {
           status: GameStatus.PUBLISED,
+          host: { id: Not(user.id) },
         },
       ],
     });
@@ -86,10 +88,36 @@ export class GameResolver {
   }
 
   @Mutation(() => Game)
-  gameUpdate(id: number, args): Promise<Game> {
-    const game = this.gameRepository.findOne(id);
-    const gameToUpdate = { ...game, ...args };
+  async gameUpdate(
+    @Arg('id', () => Int) id: number,
+    @Arg('status') status: string,
+    @Ctx() { user }: Context
+  ): Promise<Game> {
+    const gameInSession = await this.gameService.gameInSession(user);
+    if (status === GameStatus.STARTED && gameInSession) {
+      throw new Error('You have a game in session.');
+    }
+    const game = await this.gameRepository.findOne(id);
+    if (game.host.id !== user.id) {
+      throw new Error('You are not the host of this game');
+    }
+    const gameToUpdate = { ...game, status };
     // @ts-ignore
     return this.gameService.save(gameToUpdate);
+  }
+
+  @Mutation(() => Game)
+  async gameJoin(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { user }: Context
+  ): Promise<Game> {
+    const game = await this.gameRepository.findOne(id);
+    if (game.host.id === user.id) {
+      throw new Error('You cannot join your own game');
+    }
+    const myUser = await this.userRepository.findOne(user.id);
+    (await game.players).push(myUser);
+    // @ts-ignore
+    return this.gameService.save(game);
   }
 }

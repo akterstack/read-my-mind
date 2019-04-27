@@ -7,11 +7,15 @@ import {
   Login,
   Game,
   GameHosted,
-  GameList,
+  GameJoin,
   GamePlayed,
-  GameSession,
-} from './pages';
-import store from './store';
+  GameHosting,
+  GamePlaying,
+} from '@/pages';
+
+import { AnswerFeed } from '@/components';
+
+import store from '@/store';
 import { executeGraphQL } from '@/http';
 
 Vue.use(Router);
@@ -86,12 +90,12 @@ const router = new Router({
       component: Game,
       children: [
         {
-          path: 'list',
-          component: GameList,
-        },
-        {
           path: 'new',
           component: GameNew,
+        },
+        {
+          path: 'join',
+          component: GameJoin,
         },
         {
           path: 'hosted',
@@ -102,8 +106,18 @@ const router = new Router({
           component: GamePlayed,
         },
         {
-          path: 'session',
-          component: GameSession,
+          path: 'host',
+          component: GameHosting,
+          children: [
+            {
+              path: ':player',
+              component: AnswerFeed,
+            },
+          ],
+        },
+        {
+          path: 'play',
+          component: GamePlaying,
         },
       ],
     },

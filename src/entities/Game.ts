@@ -58,7 +58,7 @@ export class Game {
   @Field(() => [User])
   @ManyToMany(() => User, user => user.playerOfGames)
   @JoinTable()
-  players: User[];
+  players: Promise<User[]>;
 
   @Field(() => [GameHint])
   @OneToMany(() => GameHint, hint => hint.game)

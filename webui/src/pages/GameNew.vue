@@ -8,7 +8,7 @@
             <v-divider></v-divider>
             <v-stepper-step :complete="el > 2" step="2">Options</v-stepper-step>
             <v-divider></v-divider>
-            <v-stepper-step step="3">Start</v-stepper-step>
+            <v-stepper-step step="3">Publish</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
@@ -74,14 +74,21 @@
                 @stepBack="el = 1"
               />
             </v-stepper-content>
-
             <v-stepper-content step="3">
-              <v-btn color="success" large @click="start">Start Now!</v-btn>
+              <h1>{{ word }}</h1>
+              <p>
+                Maximum {{ maxPlayer }} player{{ maxPlayer > 1 ? 's' : '' }} can
+                join
+              </p>
+              <p>
+                Each can ask {{ maxHint }} hint{{ maxHint > 1 ? 's' : '' }}
+                (yes/no question) maximum
+              </p>
               <StepperActions
-                stepName="save"
-                nextButtonLabel="Save"
+                stepName="publish"
+                nextButtonLabel="Publish"
                 @stepBack="el = 2"
-                @stepNext="save"
+                @stepNext="publish"
               />
             </v-stepper-content>
           </v-stepper-items>
@@ -120,13 +127,6 @@ export default {
     ...mapGetterSetter(['word', 'maxPlayer', 'maxHint']),
   },
   methods: {
-    async save() {
-      this.$emit('beforeGameCreate', this.$store.state.game);
-      await this.$store.dispatch('createGame');
-      this.$store.commit('clearGame');
-      this.$emit('gameCreate', this.$store.state.game);
-      this.$router.push('/game/list');
-    },
     async publish() {
       this.$store.commit('setGame', { status: 'published' });
       await this.$emit('beforeGamePublish', this.$store.state.game);
@@ -134,23 +134,6 @@ export default {
       this.$store.commit('clearGame');
       this.$emit('gamePublish', this.$store.state.game);
       this.$router.push('/game/hosted');
-    },
-    async start() {
-      try {
-        this.$store.commit('setGame', { status: 'started' });
-        this.$emit('beforeGameStart', this.$store.state.game);
-        await this.$store.dispatch('createGame');
-        this.$store.commit('clearGame');
-        this.$emit('gameStart', this.$store.state.game);
-      } catch (e) {
-        if (e.length) {
-          e.forEach(({ message }) => {
-            this.$root.$emit('notify', {
-              message,
-            });
-          });
-        }
-      }
     },
   },
 };
