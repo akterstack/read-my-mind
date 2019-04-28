@@ -32,21 +32,21 @@ const router = new Router({
         public: true,
       },
       async beforeEnter(to, from, next) {
-        const data = await executeGraphQL(
-          `
-            query {
-              gameInSession {
-                id
-              }
-            }
-          `,
-          () => {
-            console.debug('No game in session');
-          }
-        );
-        if (data) {
-          next('/game/session');
-        }
+        // const data = await executeGraphQL(
+        //   `
+        //     query {
+        //       gameInSession {
+        //         id
+        //       }
+        //     }
+        //   `,
+        //   () => {
+        //     console.debug('No game in session');
+        //   }
+        // );
+        // if (data) {
+        //   next('/game/session');
+        // }
         next();
       },
     },

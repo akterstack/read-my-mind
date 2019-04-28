@@ -51,8 +51,8 @@ export default {
     };
   },
   methods: {
-    login() {
-      this.$store.dispatch('auth/login', {
+    async login() {
+      await this.$store.dispatch('auth/login', {
         username: this.username,
         password: this.password,
       });

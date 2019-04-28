@@ -56,7 +56,7 @@ export class Game {
   host: User;
 
   @Field(() => [User])
-  @ManyToMany(() => User, user => user.playerOfGames)
+  @ManyToMany(() => User, user => user.playerOfGames, { eager: true })
   @JoinTable()
   players: Promise<User[]>;
 

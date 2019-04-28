@@ -1,7 +1,8 @@
 import Vue from 'vue';
 import { default as Vuex, Store } from 'vuex';
 import persistState from 'vuex-persistedstate';
-import { executeGraphQL } from '@/http';
+import gql from 'graphql-tag';
+import { default as apollo } from '@/apollo';
 import { auth } from './modules';
 
 Vue.use(Vuex);
@@ -26,8 +27,8 @@ export default new Store({
   },
   actions: {
     async createGame({ state, commit }) {
-      const data = await executeGraphQL(
-        `
+      const data = await apollo.query({
+        query: gql`
           mutation CreateGame(
             $word: String!
             $maxPlayer: Int
@@ -45,32 +46,28 @@ export default new Store({
             }
           }
         `,
-        state.game
-      );
+        variables: state.game,
+      });
       commit('setGame', data.gameCreate);
     },
-    async updateGame({ commit }, { id, status }) {
-      const data = await executeGraphQL(
-        `
-          mutation StartGame(
-            $id: Int!
-            $status: String!
-          ) {
-            gameUpdate(
-              id: $id
-              status: $status
-            ) {
+    updateGame({ commit }, { id, status }) {
+      apollo.mutate({
+        mutation: gql`
+          mutation StartGame($id: Int!, $status: String!) {
+            gameUpdate(id: $id, status: $status) {
               id
               status
             }
           }
         `,
-        {
+        variables: {
           id,
           status,
-        }
-      );
-      commit('setGame', data.gameUpdate);
+        },
+        update: (proxy, { data: { gameUpdate } }) => {
+          commit('setGame', gameUpdate);
+        },
+      });
     },
   },
   mutations: {

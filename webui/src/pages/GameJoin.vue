@@ -18,8 +18,8 @@
             <v-list-tile-content>
               <v-list-tile-title>{{ host.username }}</v-list-tile-title>
               <v-list-tile-sub-title
-                >Joined {{ players.length }}</v-list-tile-sub-title
-              >
+                >ID {{ id }} - Joined {{ players.length }}
+              </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn color="primary" @click="join(+id)">Join</v-btn>
@@ -31,6 +31,7 @@
   </v-layout>
 </template>
 <script>
+import gql from 'graphql-tag';
 import { executeGraphQL } from '@/http';
 import { Avatar } from '@/components';
 
@@ -41,26 +42,48 @@ export default {
       games: [],
     };
   },
-  async beforeMount() {
-    const data = await executeGraphQL(`
-      query {
-        gamesToJoin {
-          id
-          updated
-          host {
-            username
-          }
-          players {
+  created() {
+    this.$apollo.addSmartQuery('gamesToJoin', {
+      query: gql`
+        query GamesToJoin {
+          gamesToJoin {
             id
+            updated
+            host {
+              username
+            }
+            players {
+              id
+            }
           }
         }
-      }
-    `);
-    this.games = data.gamesToJoin;
+      `,
+      result({ data }) {
+        this.games = data.gamesToJoin;
+      },
+    });
+    this.$apollo.addSmartSubscription('gameSubscribe', {
+      query: gql`
+        subscription GameSubscribe {
+          gameSubscribe {
+            id
+            updated
+            host {
+              username
+            }
+            players {
+              username
+            }
+          }
+        }
+      `,
+      result({ data }) {
+        this.games.push(data.gameSubscribe);
+      },
+    });
   },
   methods: {
     async join(id) {
-      console.log(id);
       try {
         await executeGraphQL(
           `mutation GameJoin($id: Int!) {

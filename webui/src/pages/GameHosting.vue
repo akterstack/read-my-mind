@@ -7,18 +7,18 @@
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>
           <v-flex xs4>
-            <v-list v-show="games.length" three-line class="scroll-y">
+            <v-list v-show="game.id" three-line class="scroll-y">
               <v-list-tile
-                v-for="{ id, word, host } in games"
+                v-for="{ id, username } in game.players"
                 :key="id"
                 avatar
-                :to="`/game/host/${host.username}`"
+                :to="`/game/host/${username}`"
               >
                 <v-list-tile-avatar>
-                  <Avatar :username="host.username" />
+                  <Avatar :username="username" />
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ word }}</v-list-tile-title>
+                  <v-list-tile-title>{{ username }}</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -32,33 +32,35 @@
   </v-layout>
 </template>
 <script>
-import { executeGraphQL } from '@/http';
+import gql from 'graphql-tag';
 import { Avatar } from '@/components';
 
 export default {
   components: { Avatar },
   data() {
     return {
-      games: [],
+      game: {},
     };
   },
-  async beforeMount() {
-    const data = await executeGraphQL(`
-      query {
-        gameList {
-          id
-          word
-          updated
-          host {
-            username
-          }
-          players {
+  created() {
+    this.$apollo.addSmartQuery('gameInSession', {
+      query: gql`
+        query {
+          gameInSession {
             id
+            status
+            players {
+              id
+              username
+            }
           }
         }
-      }
-    `);
-    this.games = data.gameList;
+      `,
+      result({ data }) {
+        console.log(data);
+        this.game = data.gameInSession;
+      },
+    });
   },
 };
 </script>

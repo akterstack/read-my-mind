@@ -1,4 +1,5 @@
-import http, { executeGraphQL } from '@/http';
+import gql from 'graphql-tag';
+import apollo from '@/apollo';
 
 export default {
   namespaced: true,
@@ -13,8 +14,8 @@ export default {
       { username, password, confirmPassword }
     ) {
       commit('pending');
-      const data = await executeGraphQL(
-        `
+      apollo.mutate({
+        mutation: gql`
           mutation CreateAccount(
             $username: String!
             $password: String!
@@ -27,46 +28,47 @@ export default {
             )
           }
         `,
-        {
+        variables: {
           username,
           password,
           confirmPassword,
-        }
-      );
-      const token = data.signup;
-      localStorage.setItem('token', token);
-      http.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      dispatch('fetchUserLoginInfo');
+        },
+        update: (proxy, { data }) => {
+          const token = data.signup;
+          localStorage.setItem('token', token);
+          dispatch('fetchUserLoginInfo');
+        },
+      });
     },
-    async login({ dispatch, commit }, { username, password }) {
-      commit('pending');
-      const data = await executeGraphQL(
-        `
+    async login({ dispatch }, { username, password }) {
+      return apollo.mutate({
+        mutation: gql`
           mutation Login($username: String!, $password: String!) {
             login(username: $username, password: $password)
           }
         `,
-        {
+        variables: {
           username,
           password,
-        }
-      );
-      const token = data.login;
-      localStorage.setItem('token', token);
-      http.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      dispatch('fetchUserLoginInfo');
+        },
+        update: (proxy, { data }) => {
+          const token = data.login;
+          localStorage.setItem('token', token);
+          dispatch('fetchUserLoginInfo');
+        },
+      });
     },
     async fetchUserLoginInfo({ commit }) {
-      const data = await executeGraphQL(
-        `
+      const { data } = await apollo.query({
+        query: gql`
           query {
             userLoginInfo {
               id
               username
             }
           }
-        `
-      );
+        `,
+      });
       commit('success', {
         token: localStorage.getItem('token'),
         user: data.userLoginInfo,
@@ -74,7 +76,6 @@ export default {
     },
     logout({ commit }) {
       localStorage.removeItem('token');
-      http.defaults.headers.common['Authorization'] = '';
       commit('logout');
     },
   },

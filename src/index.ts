@@ -1,9 +1,11 @@
 import 'reflect-metadata';
 // tslint:disable ordered-imports
 import { GameResolver, UserResolver } from '@/resolvers';
+import * as http from 'http';
 import * as express from 'express';
 import * as cors from 'cors';
-import * as jwt from 'express-jwt';
+import * as jwt from 'jsonwebtoken';
+import * as expressJwt from 'express-jwt';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import * as TypeORM from 'typeorm';
@@ -21,7 +23,7 @@ async function bootstrap() {
     resolvers: [UserResolver, GameResolver],
   });
 
-  const path = '/api';
+  const path = '/graphql';
   const app = express();
   if (process.env.NODE_ENV === 'development') {
     app.use(
@@ -30,20 +32,26 @@ async function bootstrap() {
       })
     );
   }
+
   // Create GraphQL server
   const server = new ApolloServer({
     schema,
-    context: ({ req }) => {
+    // @ts-ignore
+    context: ({ req, connection }) => {
       return {
-        req,
-        user: req.user, // `req.user` comes from `express-jwt`
+        user: req
+          ? req.user // `req.user` comes from `express-expressJwt`
+          : jwt.decode(connection.context.Authorization.replace('Bearer ', '')),
       };
     },
+    // context: ctx => {
+    //   console.log(JSON.stringify(ctx, null, 2));
+    // },
   });
 
   app.use(
     path,
-    jwt({
+    expressJwt({
       secret: process.env.JWT_SECRET,
       // signup/login api should be public
       // auth check will be done in type-graphql middleware (AuthMiddleware)
@@ -53,10 +61,18 @@ async function bootstrap() {
 
   server.applyMiddleware({ app, path });
 
-  // Start the server
-  app.listen({ port: 4000 }, () => {
+  const httpServer = http.createServer(app);
+  server.installSubscriptionHandlers(httpServer);
+
+  const PORT = 4000;
+  httpServer.listen(PORT, () => {
     console.log(
-      `🚀 Server ready at http://localhost:4000${server.graphqlPath}`
+      `🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`
+    );
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${PORT}${
+        server.subscriptionsPath
+      }`
     );
   });
 }

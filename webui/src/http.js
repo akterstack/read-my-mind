@@ -1,7 +1,7 @@
 import Axios from 'axios';
 
 export const http = Axios.create({
-  baseURL: 'http://localhost:4000/api',
+  baseURL: 'http://localhost:4000/graphql',
   timeout: 10000,
 });
 
