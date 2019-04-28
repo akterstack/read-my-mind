@@ -85,7 +85,7 @@ export class GameResolver {
   ): Promise<Game> {
     const gameInSession = await this.gameService.gameInSession(user);
     if (status === GameStatus.STARTED && gameInSession) {
-      throw new Error('You have a game in session.');
+      throw new Error('GAME_IN_SESSION');
     }
     // @ts-ignore
     const game: Game = await this.gameService.save({
@@ -110,7 +110,7 @@ export class GameResolver {
   ): Promise<Game> {
     const gameInSession = await this.gameService.gameInSession(ctx.user);
     if (status === GameStatus.STARTED && gameInSession) {
-      throw new Error('You have a game in session.');
+      throw new Error('GAME_IN_SESSION');
     }
     const game = await this.gameRepository.findOne(id);
     if (game.host.id !== ctx.user.id) {

@@ -63,17 +63,17 @@ export default {
   methods: {
     async start(id) {
       try {
-        console.log('asgfdg');
         this.$emit('beforeGameStart', this.$store.state.game);
         await this.$store.dispatch('updateGame', { id, status: 'started' });
-        this.$store.commit('clearGame');
+        await this.$store.commit('clearGame');
+        this.$router.push('/game/host');
         this.$emit('gameStart', this.$store.state.game);
       } catch (e) {
         if (e.length) {
           e.forEach(({ message }) => {
-            this.$root.$emit('notify', {
-              message,
-            });
+            if (message === 'GAME_IN_SESSION') {
+              this.$router.push('/game/host');
+            }
           });
         }
       }

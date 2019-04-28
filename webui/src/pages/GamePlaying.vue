@@ -25,6 +25,19 @@ export default {
     };
   },
   created() {
+    this.$apollo.addSmartQuery('gameInSession', {
+      query: gql`
+        query {
+          gameInSession {
+            id
+            status
+          }
+        }
+      `,
+      result({ data }) {
+        this.game = data.gameInSession;
+      },
+    });
     this.$apollo.addSmartSubscription('gameInSessionSubscribe', {
       query: gql`
         subscription {

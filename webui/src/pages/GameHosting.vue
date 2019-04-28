@@ -57,7 +57,6 @@ export default {
         }
       `,
       result({ data }) {
-        console.log(data);
         this.game = data.gameInSession;
       },
     });
