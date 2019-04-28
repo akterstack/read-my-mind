@@ -7,7 +7,7 @@
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>
           <v-flex xs4>
-            <v-list v-show="game.id" three-line class="scroll-y">
+            <v-list v-show="game.id" dense three-line class="scroll-y">
               <v-list-tile
                 v-for="{ id, username } in game.players"
                 :key="id"

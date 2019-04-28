@@ -1,4 +1,4 @@
-export enum HostResponse {
+export enum HostAnswer {
   YES = 'y',
   NO = 'n',
 }

@@ -1,2 +1,2 @@
 export * from './GameStatus';
-export * from './HostResponse';
+export * from './HostAnswer';

@@ -1,5 +1,5 @@
 import { Game } from '@/entities';
-import { HostResponse } from '@/entities/helper';
+import { HostAnswer } from '@/entities/helper';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -10,15 +10,15 @@ export class GameHint {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
+  @Field({ nullable: false })
   @Column()
-  question: string;
+  question!: string;
 
-  @Field()
+  @Field(() => String)
   @Column()
-  response: HostResponse;
+  answer: HostAnswer;
 
-  @Field()
+  @Field(() => Game, { nullable: false })
   @ManyToOne(() => Game, game => game.hints)
   game: Game;
 }

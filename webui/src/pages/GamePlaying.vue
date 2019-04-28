@@ -8,7 +8,15 @@
         <v-layout align-center justify-center row fill-height>
           <v-flex>
             <h1 v-if="game.status !== 'started'">Waiting...</h1>
-            <div v-else>{{ game }}</div>
+            <v-layout v-else row align-center justify-center>
+              <v-flex xs11>
+                <v-card flat>
+                  <v-card-title>sdfsaf</v-card-title>
+                </v-card>
+                <v-divider></v-divider>
+                <v-text-field v-model="hint" placeholder="Ask hint or tell the [word] with squire brackets"></v-text-field>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
       </v-card>
@@ -22,6 +30,7 @@ export default {
   data() {
     return {
       game: {},
+      hint: '',
     };
   },
   created() {
@@ -52,6 +61,17 @@ export default {
       },
     });
   },
+  methods: {
+    askHint() {
+      this.$apollo.mutate({
+        mutation: gql`
+mutation AskHint($gameId: Int!, $question: String!) {
+
+}
+`
+      })
+    }
+  }
 };
 </script>
 <style scoped>

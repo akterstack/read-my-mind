@@ -126,7 +126,7 @@ export class GameResolver {
 
   @Mutation(() => Game)
   async gameJoin(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => Int!) id: number,
     @Ctx() { user }: Context
   ): Promise<Game> {
     const game = await this.gameRepository.findOne(id);
