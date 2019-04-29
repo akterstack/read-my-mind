@@ -1,4 +1,4 @@
-import { Game } from '@/entities';
+import { Game, User } from '@/entities';
 import { HostAnswer } from '@/entities/helper';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
@@ -14,11 +14,15 @@ export class GameHint {
   @Column()
   question!: string;
 
-  @Field(() => String)
-  @Column()
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
   answer: HostAnswer;
 
-  @Field(() => Game, { nullable: false })
+  @Field(() => User)
+  @ManyToOne(() => User, user => user.playerOfGames)
+  player: User;
+
+  @Field(() => Game)
   @ManyToOne(() => Game, game => game.hints)
   game: Game;
 }

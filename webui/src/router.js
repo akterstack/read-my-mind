@@ -110,7 +110,7 @@ const router = new Router({
           component: GameHosting,
           children: [
             {
-              path: ':player',
+              path: ':playerId',
               component: AnswerFeed,
             },
           ],

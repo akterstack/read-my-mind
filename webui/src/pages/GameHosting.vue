@@ -12,7 +12,7 @@
                 v-for="{ id, username } in game.players"
                 :key="id"
                 avatar
-                :to="`/game/host/${username}`"
+                :to="`/game/host/${id}`"
               >
                 <v-list-tile-avatar>
                   <Avatar :username="username" />
