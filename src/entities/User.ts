@@ -33,4 +33,12 @@ export class User {
   @Field(() => [Game])
   @ManyToMany(() => Game, game => game.players)
   playerOfGames: Game[];
+
+  @Field()
+  @Column({ default: new Date() })
+  created: Date = new Date();
+
+  @Field()
+  @Column({ default: new Date() })
+  updated: Date = new Date();
 }

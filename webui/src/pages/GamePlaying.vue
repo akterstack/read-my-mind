@@ -13,16 +13,23 @@
                 <v-card
                   v-for="{ id, question, answer } in hints"
                   :key="id"
+                  :color="
+                    answer === 'y' ? 'green' : answer === 'n' ? 'red' : ''
+                  "
                   flat
                 >
-                  <v-card-title>{{ question }}</v-card-title>
-                  <v-card-text>{{ answer }}</v-card-text>
+                  <v-card-title
+                    >{{ question }}
+                    {{
+                      !answer ? '' : answer === 'y' ? '(YES)' : '(NO)'
+                    }}</v-card-title
+                  >
                 </v-card>
                 <v-divider></v-divider>
                 <v-text-field
                   v-model="newQuestion"
                   :placeholder="placeholder"
-                  @keydown.enter.prevent="askHint"
+                  @keydown.enter.prevent="askQuestion"
                   :disabled="latestHint && !latestHint.answer"
                 ></v-text-field>
               </v-flex>
@@ -61,6 +68,7 @@ export default {
             hints(gameId: $gameId) {
               id
               question
+              answer
             }
           }
         `,
@@ -75,12 +83,12 @@ export default {
         },
       });
     },
-    askHint() {
+    askQuestion() {
       if (!this.newQuestion) return; // todo show some error message
       this.$apollo.mutate({
         mutation: gql`
-          mutation AskHint($gameId: Int!, $question: String!) {
-            askHint(gameId: $gameId, question: $question) {
+          mutation AskQuestion($gameId: Int!, $question: String!) {
+            askQuestion(gameId: $gameId, question: $question) {
               id
               question
               answer
@@ -92,9 +100,26 @@ export default {
           question: this.newQuestion,
         },
         update: (cache, { data }) => {
-          this.hints.push(data.askHint);
-          this.latestHint = data.askHint;
+          this.hints.push(data.askQuestion);
+          this.latestHint = data.askQuestion;
           this.newQuestion = '';
+        },
+      });
+    },
+    subscribeAnswer(gameId) {
+      this.$apollo.addSmartSubscription('onAnswerGameHint', {
+        query: gql`
+          subscription OnAnswerGameHint($gameId: Int!) {
+            onAnswerGameHint(gameId: $gameId) {
+              answer
+            }
+          }
+        `,
+        variables: {
+          gameId,
+        },
+        result: ({ data }) => {
+          this.latestHint.answer = data.onAnswerGameHint.answer;
         },
       });
     },
@@ -112,6 +137,7 @@ export default {
       result: ({ data }) => {
         this.game = data.gameInSession;
         this.loadHints(+this.game.id);
+        this.subscribeAnswer(+this.game.id);
       },
     });
     this.$apollo.addSmartSubscription('gameInSessionSubscribe', {
@@ -126,6 +152,7 @@ export default {
       result: ({ data }) => {
         this.game = data.gameInSessionSubscribe;
         this.loadHints(+this.game.id);
+        this.subscribeAnswer(+this.game.id);
       },
     });
   },

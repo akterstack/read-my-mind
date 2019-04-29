@@ -4,11 +4,18 @@
       <h1 v-if="game.status !== 'started'">No question yet...</h1>
       <v-layout v-else row align-center justify-center>
         <v-flex xs11>
-          <v-card v-for="{ id, question } in hints" :key="id" flat>
+          <v-card
+            v-for="{ id, question, answer } in playersHints[
+              $route.params.playerId
+            ]"
+            :key="id"
+            :color="answer === 'y' ? 'green' : answer === 'n' ? 'red' : ''"
+            flat
+          >
             <v-card-title>{{ question }}</v-card-title>
-            <v-card-actions>
-              <v-btn color="primary" @click="answerYes">Yes</v-btn>
-              <v-btn @click="answerNo">No</v-btn>
+            <v-card-actions v-if="!answer">
+              <v-btn color="primary" @click="giveAnswer('yes', id)">Yes</v-btn>
+              <v-btn @click="giveAnswer('no', id)">No</v-btn>
             </v-card-actions>
           </v-card>
         </v-flex>
@@ -22,32 +29,91 @@ export default {
   data() {
     return {
       game: {},
-      hints: [],
+      playersHints: {},
     };
   },
   methods: {
-    loadHints(gameId, playerId) {
-      if (!gameId || !playerId) return;
-      this.$apollo.addSmartQuery('hints', {
+    loadAllHints(gameId) {
+      this.subscribeQuestion(gameId);
+      this.$apollo.addSmartQuery('allPlayersHints', {
         query: gql`
-          query AllHints($gameId: Int!, $playerId: Int) {
-            hints(gameId: $gameId, playerId: $playerId) {
+          query AllHints($gameId: Int!) {
+            allPlayersHints(gameId: $gameId) {
               id
               question
+              answer
+              player {
+                id
+              }
             }
           }
         `,
         variables: {
           gameId,
-          playerId,
         },
         result({ data }) {
-          this.hints = data.hints;
+          this.playersHints = data.allPlayersHints.reduce(
+            (playersHints, hint) => {
+              const individualHints = playersHints[hint.player.id] || [];
+              individualHints.push(hint);
+              playersHints[hint.player.id] = individualHints;
+              return playersHints;
+            },
+            {}
+          );
         },
       });
     },
-    answerYes() {},
-    answerNo() {},
+    subscribeQuestion(gameId) {
+      this.$apollo.addSmartSubscription('onQuestionGameHint', {
+        query: gql`
+          subscription OnQuestionGameHint($gameId: Int!) {
+            onQuestionGameHint(gameId: $gameId) {
+              id
+              question
+              answer
+              player {
+                id
+              }
+            }
+          }
+        `,
+        variables: {
+          gameId,
+        },
+        result: ({ data }) => {
+          this.playersHints[data.onQuestionGameHint.player.id].push(
+            data.onQuestionGameHint
+          );
+        },
+      });
+    },
+    giveAnswer(answer, hintId) {
+      this.$apollo.mutate({
+        mutation: gql`
+          mutation GiveAnswer($hintId: Int!, $answer: String!) {
+            giveAnswer(hintId: $hintId, answer: $answer) {
+              answer
+              player {
+                id
+              }
+            }
+          }
+        `,
+        variables: {
+          hintId,
+          answer,
+        },
+        update: (cache, { data }) => {
+          const xHints = this.playersHints[data.giveAnswer.player.id];
+          xHints.forEach(hint => {
+            if (hint.id === hintId) {
+              hint.answer = data.giveAnswer.answer;
+            }
+          });
+        },
+      });
+    },
   },
   created() {
     this.$apollo.addSmartQuery('gameInSession', {
@@ -61,10 +127,7 @@ export default {
       `,
       result: ({ data }) => {
         this.game = data.gameInSession;
-        this.loadHints(
-          +this.game.id,
-          +this.$router.currentRoute.params.playerId
-        );
+        this.loadAllHints(+this.game.id);
       },
     });
     this.$apollo.addSmartSubscription('gameInSessionSubscribe', {
@@ -78,10 +141,7 @@ export default {
       `,
       result: ({ data }) => {
         this.game = data.gameInSessionSubscribe;
-        this.loadHints(
-          +this.game.id,
-          +this.$router.currentRoute.params.playerId
-        );
+        this.loadAllHints(+this.game.id);
       },
     });
   },

@@ -44,9 +44,6 @@ async function bootstrap() {
           : jwt.decode(connection.context.Authorization.replace('Bearer ', '')),
       };
     },
-    // context: ctx => {
-    //   console.log(JSON.stringify(ctx, null, 2));
-    // },
   });
 
   app.use(

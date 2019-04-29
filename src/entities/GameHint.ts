@@ -19,10 +19,18 @@ export class GameHint {
   answer: HostAnswer;
 
   @Field(() => User)
-  @ManyToOne(() => User, user => user.playerOfGames)
+  @ManyToOne(() => User, user => user.playerOfGames, { eager: true })
   player: User;
 
   @Field(() => Game)
-  @ManyToOne(() => Game, game => game.hints)
+  @ManyToOne(() => Game, game => game.hints, { eager: true })
   game: Game;
+
+  @Field()
+  @Column({ default: new Date() })
+  created: Date = new Date();
+
+  @Field()
+  @Column({ default: new Date() })
+  updated: Date = new Date();
 }
