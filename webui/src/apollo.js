@@ -9,8 +9,8 @@ const authContext = () => {
   const token = localStorage.getItem('token');
   if (token) {
     return {
-      Authorization:`Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    };
   }
   return {};
 };

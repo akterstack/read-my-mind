@@ -62,6 +62,7 @@ export class GameHintResolver {
     @Ctx() { user }: Context,
     @PubSub('GAME_HINT_QUESTION') publisher: Publisher<GameHint>
   ): Promise<GameHint> {
+    await this.hintService.validate(gameId, user.id);
     // @ts-ignore
     const hint = await this.hintService.save({
       question,
@@ -84,6 +85,13 @@ export class GameHintResolver {
       answer.toLowerCase() === 'yes' ? HostAnswer.YES : HostAnswer.NO;
     // @ts-ignore
     const nHint = await this.hintService.save(xHint);
+    try {
+      await this.hintService.validate(nHint.game.id, nHint.player.id);
+    } catch (e) {
+      if (e.message === 'MaxHintsRedeemed') {
+        nHint.isAllHintsRedeemed = true;
+      }
+    }
     await publisher(nHint);
     return nHint;
   }
@@ -96,7 +104,7 @@ export class GameHintResolver {
       );
     },
   })
-  onQuestionGameHint(
+  onGameHintQuestion(
     @Root() hintPayload: GameHint,
     @Arg('gameId', () => Int!) _: number
   ) {
@@ -109,7 +117,7 @@ export class GameHintResolver {
       return payload.game.id === args.gameId && payload.player.id === user.id;
     },
   })
-  onAnswerGameHint(
+  onGameHintAnswer(
     @Root() hintPayload: GameHint,
     @Arg('gameId', () => Int!) _: number
   ) {

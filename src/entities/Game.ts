@@ -44,11 +44,6 @@ export class Game {
 
   @Field(() => User)
   @Index()
-  @ManyToOne(() => User)
-  winner: User;
-
-  @Field(() => User)
-  @Index()
   @ManyToOne(() => User, user => user.hostOfGames, {
     nullable: false,
     eager: true,
@@ -56,8 +51,8 @@ export class Game {
   host: User;
 
   @Field(() => [User])
-  @ManyToMany(() => User, user => user.playerOfGames, { eager: true })
   @JoinTable()
+  @ManyToMany(() => User, user => user.playerOfGames, { eager: true })
   players: Promise<User[]>;
 
   @Field(() => [GameHint])

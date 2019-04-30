@@ -1,33 +1,25 @@
 import { Game, User } from '@/entities';
-import { HostAnswer } from '@/entities/helper';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 @ObjectType()
-export class GameHint {
+export class CommittedPlayer {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 
   @Field({ nullable: false })
   @Column()
-  question!: string;
+  word!: string;
 
-  @Field(() => String, { nullable: true })
-  @Column({ nullable: true })
-  answer: HostAnswer;
-
-  @Field(() => Boolean)
-  isAllHintsRedeemed = false;
+  @Field(() => Game)
+  @ManyToOne(() => Game, { eager: true })
+  game: Game;
 
   @Field(() => User)
   @ManyToOne(() => User, user => user.playerOfGames, { eager: true })
   player: User;
-
-  @Field(() => Game)
-  @ManyToOne(() => Game, game => game.hints, { eager: true })
-  game: Game;
 
   @Field()
   @Column({ default: new Date() })

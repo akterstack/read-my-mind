@@ -65,10 +65,10 @@ export default {
       });
     },
     subscribeQuestion(gameId) {
-      this.$apollo.addSmartSubscription('onQuestionGameHint', {
+      this.$apollo.addSmartSubscription('onGameHintQuestion', {
         query: gql`
-          subscription OnQuestionGameHint($gameId: Int!) {
-            onQuestionGameHint(gameId: $gameId) {
+          subscription OnGameHintQuestion($gameId: Int!) {
+            onGameHintQuestion(gameId: $gameId) {
               id
               question
               answer
@@ -82,8 +82,8 @@ export default {
           gameId,
         },
         result: ({ data }) => {
-          this.playersHints[data.onQuestionGameHint.player.id].push(
-            data.onQuestionGameHint
+          this.playersHints[data.onGameHintQuestion.player.id].push(
+            data.onGameHintQuestion
           );
         },
       });

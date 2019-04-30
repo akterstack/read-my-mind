@@ -1,9 +1,9 @@
 <template>
-  <v-layout row>
-    <v-flex xs12>
+  <v-layout row align-center justify-center>
+    <v-flex xs12 lg6>
       <v-card>
         <v-toolbar color="cyan" dark>
-          <v-toolbar-title>Ask Hints</v-toolbar-title>
+          <v-toolbar-title>Ask Hints (Max {{ game.maxHint }})</v-toolbar-title>
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>
           <v-flex>
@@ -56,7 +56,9 @@ export default {
     placeholder() {
       return this.latestHint && !this.latestHint.answer
         ? `Waiting for response`
-        : `Ask hint or tell the [word] with squire brackets`;
+        : this.latestHint.isAllHintsRedeemed
+        ? `Commit the final [word] wrapping square brackets`
+        : `Ask hint or commit the [word] wrapping square brackets`;
     },
   },
   methods: {
@@ -107,11 +109,12 @@ export default {
       });
     },
     subscribeAnswer(gameId) {
-      this.$apollo.addSmartSubscription('onAnswerGameHint', {
+      this.$apollo.addSmartSubscription('onGameHintAnswer', {
         query: gql`
-          subscription OnAnswerGameHint($gameId: Int!) {
-            onAnswerGameHint(gameId: $gameId) {
+          subscription OnGameHintAnswer($gameId: Int!) {
+            onGameHintAnswer(gameId: $gameId) {
               answer
+              isAllHintsRedeemed
             }
           }
         `,
@@ -119,8 +122,31 @@ export default {
           gameId,
         },
         result: ({ data }) => {
-          this.latestHint.answer = data.onAnswerGameHint.answer;
+          this.latestHint.answer = data.onGameHintAnswer.answer;
+          this.latestHint.isAllHintsRedeemed =
+            data.onGameHintAnswer.isAllHintsRedeemed;
         },
+      });
+    },
+    commitWord() {
+      this.$apollo.mutate({
+        mutation: gql`
+          mutation CommitWord($word: String!, $gameId: Int!) {
+            commitWord(word: $word, gameId: $gameId) {
+              word
+              game {
+                word
+              }
+            }
+          }
+        `,
+        variables: {
+          word: this.newQuestion,
+          gameId: +this.game.id,
+        },
+        update: (cache, { data }) => {
+
+        }
       });
     },
   },
@@ -131,6 +157,7 @@ export default {
           gameInSession {
             id
             status
+            maxHint
           }
         }
       `,
@@ -146,6 +173,7 @@ export default {
           gameInSessionSubscribe {
             id
             status
+            maxHint
           }
         }
       `,

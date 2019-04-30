@@ -1,22 +1,21 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import {
-  Home,
-  GameNew,
-  Signup,
-  Login,
   Game,
   GameHosted,
-  GameJoin,
-  GamePlayed,
   GameHosting,
+  GameJoin,
+  GameNew,
+  GamePlayed,
   GamePlaying,
+  Home,
+  Login,
+  Signup,
 } from '@/pages';
 
 import { AnswerFeed } from '@/components';
 
 import store from '@/store';
-import { executeGraphQL } from '@/http';
 
 Vue.use(Router);
 
