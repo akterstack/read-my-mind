@@ -130,8 +130,8 @@ export default {
     async publish() {
       this.$store.commit('setGame', { status: 'published' });
       await this.$emit('beforeGamePublish', this.$store.state.game);
-      this.$store.dispatch('createGame');
-      this.$store.commit('clearGame');
+      await this.$store.dispatch('createGame');
+      await this.$store.commit('clearGame');
       this.$emit('gamePublish', this.$store.state.game);
       this.$router.push('/game/hosted');
     },

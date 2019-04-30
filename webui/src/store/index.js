@@ -28,8 +28,8 @@ export default new Store({
   },
   actions: {
     async createGame({ state, commit }) {
-      const data = await apollo.query({
-        query: gql`
+      const data = await apollo.mutate({
+        mutation: gql`
           mutation CreateGame(
             $word: String!
             $maxPlayer: Int

@@ -40,7 +40,6 @@
 </template>
 <script>
 import gql from 'graphql-tag';
-import { executeGraphQL } from '@/http';
 import { Avatar } from '@/components';
 
 export default {
@@ -92,18 +91,23 @@ export default {
   },
   methods: {
     async join(id) {
+      console.log('id' + id);
       try {
-        await executeGraphQL(
-          `mutation GameJoin($id: Int!) {
-            gameJoin(id: $id) {
-              players {
-                id
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation GameJoin($id: Int!) {
+              gameJoin(id: $id) {
+                players {
+                  id
+                }
               }
             }
-          }`,
-          { id }
-        );
-        this.$router.push('/game/play');
+          `,
+          variables: { id },
+          update: () => {
+            this.$router.push('/game/play');
+          },
+        });
       } catch (e) {
         if (e.length) {
           e.forEach(({ message }) => {
@@ -112,6 +116,7 @@ export default {
             });
           });
         } else {
+          console.debug(e);
           this.$root.$emit('notify', {
             message: 'Unknown error occurred. Please contact admin.',
           });
