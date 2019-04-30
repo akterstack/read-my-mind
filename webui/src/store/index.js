@@ -24,6 +24,7 @@ export default new Store({
   state: {
     redirectTo: '',
     game: initGame(),
+    isWinner: false,
   },
   actions: {
     async createGame({ state, commit }) {
@@ -51,7 +52,7 @@ export default new Store({
       commit('setGame', data.gameCreate);
     },
     updateGame({ commit }, { id, status }) {
-      apollo.mutate({
+      return apollo.mutate({
         mutation: gql`
           mutation StartGame($id: Int!, $status: String!) {
             gameUpdate(id: $id, status: $status) {
@@ -72,6 +73,7 @@ export default new Store({
   },
   mutations: {
     redirectTo(state, path) {
+      if (path === '/signup' || path === '/login') return;
       state.redirectTo = path;
     },
     setGame(state, game) {
@@ -79,6 +81,9 @@ export default new Store({
     },
     clearGame(state) {
       state.game = initGame();
+    },
+    setCelebration(state, isWinner) {
+      state.isWinner = isWinner;
     },
   },
 });

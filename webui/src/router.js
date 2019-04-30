@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import {
+  Celebrate,
   Game,
   GameHosted,
   GameHosting,
@@ -117,6 +118,10 @@ const router = new Router({
         {
           path: 'play',
           component: GamePlaying,
+        },
+        {
+          path: 'celebrate',
+          component: Celebrate,
         },
       ],
     },

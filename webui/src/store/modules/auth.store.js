@@ -9,12 +9,8 @@ export default {
     user: false,
   },
   actions: {
-    async signup(
-      { dispatch, commit },
-      { username, password, confirmPassword }
-    ) {
-      commit('pending');
-      apollo.mutate({
+    async signup({ dispatch }, { username, password, confirmPassword }) {
+      return apollo.mutate({
         mutation: gql`
           mutation CreateAccount(
             $username: String!
@@ -80,9 +76,6 @@ export default {
     },
   },
   mutations: {
-    pending(state) {
-      state.status = 'pending';
-    },
     success(state, { token, user }) {
       state.status = 'success';
       state.token = token;

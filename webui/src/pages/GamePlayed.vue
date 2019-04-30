@@ -6,8 +6,9 @@
           <v-toolbar-title>My Played Games</v-toolbar-title>
         </v-toolbar>
 
-        <v-list v-show="games.length" three-line class="scroll-y">
+        <v-list three-line class="scroll-y">
           <v-list-tile
+            v-show="games.length"
             v-for="{ id, word, host } in games"
             :key="id"
             avatar
@@ -18,6 +19,13 @@
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title>{{ word }}</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-show="!games.length" avatar>
+            <v-list-tile-content>
+              <v-list-tile-title style="text-align: center"
+                >No game yet</v-list-tile-title
+              >
             </v-list-tile-content>
           </v-list-tile>
         </v-list>

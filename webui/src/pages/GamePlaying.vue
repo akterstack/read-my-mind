@@ -27,10 +27,10 @@
                 </v-card>
                 <v-divider></v-divider>
                 <v-text-field
-                  v-model="newQuestion"
+                  v-model="questionOrWord"
                   :placeholder="placeholder"
                   @keydown.enter.prevent="askQuestion"
-                  :disabled="latestHint && !latestHint.answer"
+                  :disabled="hints.length > 0 && !latestHint.answer"
                 ></v-text-field>
               </v-flex>
             </v-layout>
@@ -43,27 +43,31 @@
 <script>
 import gql from 'graphql-tag';
 
+function parseWord(word) {
+  const parsed = word.trim().match(/\[(.*?)]/i);
+  return parsed[1] || '';
+}
+
 export default {
   data() {
     return {
       game: {},
       hints: [],
-      latestHint: null,
-      newQuestion: '',
+      latestHint: {},
+      questionOrWord: '',
     };
   },
   computed: {
     placeholder() {
-      return this.latestHint && !this.latestHint.answer
+      return this.hints.length && !this.latestHint.answer
         ? `Waiting for response`
         : this.latestHint.isAllHintsRedeemed
-        ? `Commit the final [word] wrapping square brackets`
+        ? `Commit the final [word]`
         : `Ask hint or commit the [word] wrapping square brackets`;
     },
   },
   methods: {
-    loadHints(gameId) {
-      if (!gameId) return;
+    loadHints() {
       this.$apollo.addSmartQuery('hints', {
         query: gql`
           query AllHints($gameId: Int!) {
@@ -75,18 +79,27 @@ export default {
           }
         `,
         variables: {
-          gameId: gameId,
+          gameId: this.game.id,
         },
         result({ data }) {
           this.hints = data.hints;
           if (this.hints && this.hints.length) {
             this.latestHint = this.hints[this.hints.length - 1];
+            if (this.hints.length === this.game.maxHint) {
+              this.latestHint.isAllHintsRedeemed = true;
+            }
           }
         },
       });
     },
     askQuestion() {
-      if (!this.newQuestion) return; // todo show some error message
+      if (
+        parseWord(this.questionOrWord) ||
+        this.latestHint.isAllHintsRedeemed
+      ) {
+        this.commitWord();
+        return;
+      }
       this.$apollo.mutate({
         mutation: gql`
           mutation AskQuestion($gameId: Int!, $question: String!) {
@@ -98,17 +111,17 @@ export default {
           }
         `,
         variables: {
-          gameId: +this.game.id,
-          question: this.newQuestion,
+          gameId: this.game.id,
+          question: this.questionOrWord,
         },
         update: (cache, { data }) => {
           this.hints.push(data.askQuestion);
           this.latestHint = data.askQuestion;
-          this.newQuestion = '';
+          this.questionOrWord = '';
         },
       });
     },
-    subscribeAnswer(gameId) {
+    subscribeAnswer() {
       this.$apollo.addSmartSubscription('onGameHintAnswer', {
         query: gql`
           subscription OnGameHintAnswer($gameId: Int!) {
@@ -119,7 +132,7 @@ export default {
           }
         `,
         variables: {
-          gameId,
+          gameId: this.game.id,
         },
         result: ({ data }) => {
           this.latestHint.answer = data.onGameHintAnswer.answer;
@@ -141,12 +154,16 @@ export default {
           }
         `,
         variables: {
-          word: this.newQuestion,
-          gameId: +this.game.id,
+          word: parseWord(this.questionOrWord) || this.questionOrWord,
+          gameId: this.game.id,
         },
         update: (cache, { data }) => {
-
-        }
+          this.$store.commit(
+            'setCelebration',
+            data.commitWord.word === data.commitWord.game.word
+          );
+          this.$router.push('/game/celebrate');
+        },
       });
     },
   },
@@ -162,9 +179,11 @@ export default {
         }
       `,
       result: ({ data }) => {
+        console.log('insess');
+        console.log(data.gameInSession);
         this.game = data.gameInSession;
-        this.loadHints(+this.game.id);
-        this.subscribeAnswer(+this.game.id);
+        this.loadHints();
+        this.subscribeAnswer();
       },
     });
     this.$apollo.addSmartSubscription('gameInSessionSubscribe', {
@@ -178,9 +197,11 @@ export default {
         }
       `,
       result: ({ data }) => {
+        console.log('onsubssess');
+        console.log(data.gameInSessionSubscribe);
         this.game = data.gameInSessionSubscribe;
-        this.loadHints(+this.game.id);
-        this.subscribeAnswer(+this.game.id);
+        this.loadHints();
+        this.subscribeAnswer();
       },
     });
   },

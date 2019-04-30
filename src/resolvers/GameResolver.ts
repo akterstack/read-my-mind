@@ -1,8 +1,7 @@
-import { Game, User } from '@/entities';
-import { CommittedPlayer } from '@/entities/CommittedPlayer';
+import { CommittedPlayer, Game, User } from '@/entities';
 import { GameStatus } from '@/entities/helper';
 import { Context } from '@/resolvers/helper';
-import { GameService } from '@/services';
+import { CommittedPlayerService, GameService } from '@/services';
 import {
   Arg,
   Ctx,
@@ -16,14 +15,15 @@ import {
 } from 'type-graphql';
 import { Not, Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import {CommittedPlayerService} from "@/services/CommittedPlayerService";
 
 export class GameResolver {
   constructor(
     private readonly gameService: GameService,
-    private readonly committedPlayerservice: CommittedPlayerService,
+    private readonly committedPlayerService: CommittedPlayerService,
     @InjectRepository(Game) private readonly gameRepository: Repository<Game>,
-    @InjectRepository(User) private readonly userRepository: Repository<User>
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(CommittedPlayer)
+    private readonly committedPlayerRepository: Repository<CommittedPlayer>
   ) {}
 
   @Query(() => Game)
@@ -75,12 +75,6 @@ export class GameResolver {
         playerId: user.id,
       })
       .getMany();
-  }
-
-  @Query(() => Game)
-  async celebrateGame(@Arg('id', () => Int!) id: number, @Ctx() { user }: Context) {
-    let game = await this.gameService.gameInSession(user);
-    if (game.id === ga)
   }
 
   @Mutation(() => Game)
@@ -155,7 +149,12 @@ export class GameResolver {
     @Ctx() { user }: Context
   ): Promise<CommittedPlayer> {
     // @ts-ignore
-    return this.committedPlayerservice.save(word, gameId, user.id);
+    const committedPlayer = await this.committedPlayerService.save(
+      word,
+      gameId,
+      user.id
+    );
+    return this.committedPlayerRepository.findOne(committedPlayer.id);
   }
 
   @Subscription({

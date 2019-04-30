@@ -7,8 +7,9 @@
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>
           <v-flex xs4>
-            <v-list v-show="game.id" dense three-line class="scroll-y">
+            <v-list dense three-line class="scroll-y">
               <v-list-tile
+                v-show="game.id"
                 v-for="{ id, username } in game.players"
                 :key="id"
                 avatar
@@ -19,6 +20,13 @@
                 </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title>{{ username }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile v-show="!games.length" avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title style="text-align: center"
+                    >No game yet</v-list-tile-title
+                  >
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>

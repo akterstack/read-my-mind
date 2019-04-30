@@ -1,6 +1,6 @@
 <template>
   <h1>
-    {{ celebrationText }}
+    {{ $store.state.isWinner ? 'Winner!' : 'Loser :/' }}
   </h1>
 </template>
 <script>
@@ -10,8 +10,5 @@ export default {
       celebrationText: 'Celebrating...',
     };
   },
-  created() {
-
-  }
 };
 </script>

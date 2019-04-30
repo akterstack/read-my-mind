@@ -59,13 +59,20 @@ export default {
     };
   },
   methods: {
-    createAccount() {
-      this.$store.dispatch('auth/signup', {
-        username: this.username,
-        password: this.password,
-        confirmPassword: this.confirmPassword,
-      });
-      this.$router.push(this.$store.state.redirectTo || '/');
+    async createAccount() {
+      try {
+        await this.$store.dispatch('auth/signup', {
+          username: this.username,
+          password: this.password,
+          confirmPassword: this.confirmPassword,
+        });
+        this.$router.push(this.$store.state.redirectTo || '/');
+      } catch (e) {
+        console.debug(e);
+        this.$root.$emit('notify', {
+          message: e.message.replace('GraphQL error: ', ''),
+        });
+      }
     },
   },
 };

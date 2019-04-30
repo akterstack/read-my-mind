@@ -6,8 +6,9 @@
           <v-toolbar-title>Join Games</v-toolbar-title>
         </v-toolbar>
 
-        <v-list v-show="games.length" three-line class="scroll-y">
+        <v-list three-line class="scroll-y">
           <v-list-tile
+            v-show="games.length"
             v-for="{ id, word, updated, host, players } in games"
             :key="id"
             avatar
@@ -24,6 +25,13 @@
             <v-list-tile-action>
               <v-btn color="primary" @click="join(+id)">Join</v-btn>
             </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile v-show="!games.length" avatar>
+            <v-list-tile-content>
+              <v-list-tile-title style="text-align: center"
+                >No game yet</v-list-tile-title
+              >
+            </v-list-tile-content>
           </v-list-tile>
         </v-list>
       </v-card>

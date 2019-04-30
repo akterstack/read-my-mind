@@ -52,11 +52,18 @@ export default {
   },
   methods: {
     async login() {
-      await this.$store.dispatch('auth/login', {
-        username: this.username,
-        password: this.password,
-      });
-      this.$router.push(this.$store.state.redirectTo || '/');
+      try {
+        await this.$store.dispatch('auth/login', {
+          username: this.username,
+          password: this.password,
+        });
+        this.$router.push(this.$store.state.redirectTo || '/');
+      } catch (e) {
+        console.debug(e);
+        this.$root.$emit('notify', {
+          message: e.message.replace('GraphQL error: ', ''),
+        });
+      }
     },
   },
 };

@@ -29,6 +29,22 @@
         <v-divider></v-divider>
 
         <v-list>
+          <v-list-tile to="/game/new">
+            <v-list-tile-avatar>
+              <v-icon>videogame_asset</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>Create a game</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile to="/game/join">
+            <v-list-tile-avatar>
+              <v-icon>gamepad</v-icon>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title>Join a game</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
           <v-list-tile to="/game/hosted">
             <v-list-tile-avatar>
               <v-icon>card_travel</v-icon>

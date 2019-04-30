@@ -1,7 +1,7 @@
 import { GameHint } from '@/entities';
 import { GameStatus } from '@/entities/helper';
 import { IsNotEmpty, Max } from 'class-validator';
-import { Field, ID, ObjectType } from 'type-graphql';
+import { Field, Int, ObjectType } from 'type-graphql';
 import {
   Column,
   Entity,
@@ -17,7 +17,7 @@ import { User } from './User';
 @ObjectType()
 @Entity()
 export class Game {
-  @Field(() => ID)
+  @Field(() => Int)
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -1,3 +1,4 @@
+export { default as Celebrate } from './Celebrate';
 export { default as Home } from './Home';
 export { default as Game } from './Game';
 export { default as GameHosted } from './GameHosted';
