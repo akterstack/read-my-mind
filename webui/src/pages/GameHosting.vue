@@ -18,16 +18,16 @@
                 <v-list-tile-avatar>
                   <Avatar :username="username" />
                 </v-list-tile-avatar>
+
                 <v-list-tile-content>
                   <v-list-tile-title>{{ username }}</v-list-tile-title>
                 </v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile v-show="!games.length" avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title style="text-align: center"
-                    >No game yet</v-list-tile-title
+
+                <v-list-tile-action>
+                  <v-icon v-show="pendingAnswerFor[id]" color="green"
+                    >star</v-icon
                   >
-                </v-list-tile-content>
+                </v-list-tile-action>
               </v-list-tile>
             </v-list>
           </v-flex>
@@ -40,6 +40,7 @@
   </v-layout>
 </template>
 <script>
+import Vue from 'vue';
 import gql from 'graphql-tag';
 import { Avatar } from '@/components';
 
@@ -48,6 +49,7 @@ export default {
   data() {
     return {
       game: {},
+      pendingAnswerFor: {},
     };
   },
   created() {
@@ -68,6 +70,12 @@ export default {
         this.game = data.gameInSession;
       },
     });
+    this.$root.$on('hint', hint => {
+      Vue.set(this.pendingAnswerFor, hint.player.id, !hint.answer);
+    });
+  },
+  beforeDestroy() {
+    this.$root.$off('hint');
   },
 };
 </script>

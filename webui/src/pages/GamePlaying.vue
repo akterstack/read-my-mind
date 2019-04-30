@@ -45,7 +45,7 @@ import gql from 'graphql-tag';
 
 function parseWord(word) {
   const parsed = word.trim().match(/\[(.*?)]/i);
-  return parsed[1] || '';
+  return parsed ? parsed[1] : '';
 }
 
 export default {
@@ -179,8 +179,6 @@ export default {
         }
       `,
       result: ({ data }) => {
-        console.log('insess');
-        console.log(data.gameInSession);
         this.game = data.gameInSession;
         this.loadHints();
         this.subscribeAnswer();

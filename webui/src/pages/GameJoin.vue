@@ -91,7 +91,6 @@ export default {
   },
   methods: {
     async join(id) {
-      console.log('id' + id);
       try {
         await this.$apollo.mutate({
           mutation: gql`
