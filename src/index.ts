@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 // tslint:disable ordered-imports
-import { GameResolver, UserResolver } from '@/resolvers';
+import { GameHintResolver, GameResolver, UserResolver } from '@/resolvers';
+import * as path from 'path';
 import * as http from 'http';
 import * as express from 'express';
 import * as cors from 'cors';
@@ -20,10 +21,10 @@ async function bootstrap() {
   const schema = await buildSchema({
     container: Container,
     globalMiddlewares: [AuthMiddleware],
-    resolvers: [UserResolver, GameResolver],
+    resolvers: [UserResolver, GameResolver, GameHintResolver],
   });
 
-  const path = '/graphql';
+  const graphqlPath = '/graphql';
   const app = express();
   if (process.env.NODE_ENV === 'development') {
     app.use(
@@ -36,8 +37,7 @@ async function bootstrap() {
   // Create GraphQL server
   const server = new ApolloServer({
     schema,
-    // @ts-ignore
-    context: ({ req, connection }) => {
+    context: ({ req, connection }: any) => {
       return {
         user: req
           ? req.user // `req.user` comes from `express-expressJwt`
@@ -47,7 +47,7 @@ async function bootstrap() {
   });
 
   app.use(
-    path,
+    graphqlPath,
     expressJwt({
       secret: process.env.JWT_SECRET,
       // signup/login api should be public
@@ -56,7 +56,16 @@ async function bootstrap() {
     })
   );
 
-  server.applyMiddleware({ app, path });
+  app.use(
+    '/public',
+    express.static(path.resolve(__dirname, '../webui/public'))
+  );
+  app.use(express.static(path.resolve(__dirname, '../webui/dist')));
+  app.get('/', (_, res) => {
+    res.sendFile(path.resolve(__dirname, '../webui/dist/index.html'));
+  });
+
+  server.applyMiddleware({ app, path: graphqlPath });
 
   const httpServer = http.createServer(app);
   server.installSubscriptionHandlers(httpServer);
@@ -74,4 +83,10 @@ async function bootstrap() {
   });
 }
 
-bootstrap();
+(async function f() {
+  try {
+    await bootstrap();
+  } catch (e) {
+    console.log(e);
+  }
+})();

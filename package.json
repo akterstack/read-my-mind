@@ -6,7 +6,9 @@
   "author": "Akter Hossain <akterstack@gmail.com> (https://www.linkedin.com/in/akterstack/)",
   "main": "dist/index.js",
   "scripts": {
-    "start:dev": "tsnd --respawn --no-notify -r dotenv/config -r tsconfig-paths/register ./src/index.ts"
+    "postinstall": "cd webui && npm install && npm run build",
+    "start:dev": "tsnd --respawn --no-notify -r dotenv/config -r tsconfig-paths/register ./src/index.ts",
+    "start": "NODE_ENV=production tsnd --respawn --no-notify -r dotenv/config -r tsconfig-paths/register ./src/index.ts"
   },
   "repository": {
     "type": "git",

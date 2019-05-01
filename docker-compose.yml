@@ -1,0 +1,27 @@
+version: "3.7"
+volumes:
+  rmm_node_modules:
+  postgdata:
+services:
+  app:
+    build: .
+    volumes:
+      - ./:/home/app
+      - rmm_node_modules:/home/app/node_modules/
+    ports:
+      - 4000:4000
+    depends_on:
+      - postgresdb
+    command: ["npm", "start"]
+
+  postgresdb:
+    image: postgres:11.2-alpine
+    restart: 'always'
+    environment:
+      POSTGRES_USER: readmymind
+      POSTGRES_PASSWORD: calipsa
+      POSTGRES_DB: read_mi_mynd
+    volumes:
+      - postgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432

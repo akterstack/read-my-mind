@@ -1,12 +1,12 @@
 {
   "type": "postgres",
-  "host": "localhost",
+  "host": "postgresdb",
   "port": 5432,
   "username": "readmymind",
   "password": "calipsa",
   "database": "read_mi_mynd",
   "synchronize": true,
-  "logging": false,
+  "logging": true,
   "entities": [
     "src/entities/**/*.ts"
   ]
