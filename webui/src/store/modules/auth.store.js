@@ -10,48 +10,54 @@ export default {
   },
   actions: {
     async signup({ dispatch }, { username, password, confirmPassword }) {
-      return apollo.mutate({
-        mutation: gql`
-          mutation CreateAccount(
-            $username: String!
-            $password: String!
-            $confirmPassword: String!
-          ) {
-            signup(
-              username: $username
-              password: $password
-              confirmPassword: $confirmPassword
-            )
-          }
-        `,
-        variables: {
-          username,
-          password,
-          confirmPassword,
-        },
-        update: (proxy, { data }) => {
-          const token = data.signup;
-          localStorage.setItem('token', token);
-          dispatch('fetchUserLoginInfo');
-        },
+      return new Promise(resolve => {
+        apollo.mutate({
+          mutation: gql`
+            mutation CreateAccount(
+              $username: String!
+              $password: String!
+              $confirmPassword: String!
+            ) {
+              signup(
+                username: $username
+                password: $password
+                confirmPassword: $confirmPassword
+              )
+            }
+          `,
+          variables: {
+            username,
+            password,
+            confirmPassword,
+          },
+          update: async (proxy, { data }) => {
+            const token = data.signup;
+            localStorage.setItem('token', token);
+            await dispatch('fetchUserLoginInfo');
+            resolve();
+          },
+        });
       });
     },
     async login({ dispatch }, { username, password }) {
-      return apollo.mutate({
-        mutation: gql`
-          mutation Login($username: String!, $password: String!) {
-            login(username: $username, password: $password)
-          }
-        `,
-        variables: {
-          username,
-          password,
-        },
-        update: (proxy, { data }) => {
-          const token = data.login;
-          localStorage.setItem('token', token);
-          dispatch('fetchUserLoginInfo');
-        },
+      return new Promise(resolve => {
+        apollo.mutate({
+          mutation: gql`
+            mutation Login($username: String!, $password: String!) {
+              login(username: $username, password: $password)
+            }
+          `,
+          variables: {
+            username,
+            password,
+          },
+          update: async (proxy, { data }) => {
+            const token = data.login;
+            localStorage.setItem('token', token);
+            await dispatch('fetchUserLoginInfo');
+            resolve();
+          },
+        });
       });
     },
     async fetchUserLoginInfo({ commit }) {
@@ -65,14 +71,14 @@ export default {
           }
         `,
       });
-      commit('success', {
+      await commit('success', {
         token: localStorage.getItem('token'),
         user: data.userLoginInfo,
       });
     },
-    logout({ commit }) {
+    async logout({ commit }) {
       localStorage.removeItem('token');
-      commit('logout');
+      await commit('logout');
     },
   },
   mutations: {
