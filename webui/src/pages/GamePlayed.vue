@@ -3,6 +3,7 @@
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
         <v-toolbar color="cyan" dark>
+          <v-icon>rowing</v-icon>
           <v-toolbar-title>My Played Games</v-toolbar-title>
         </v-toolbar>
 

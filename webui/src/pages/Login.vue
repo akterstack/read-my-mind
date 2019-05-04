@@ -57,7 +57,9 @@ export default {
           username: this.username,
           password: this.password,
         });
-        this.$router.push(this.$store.state.redirectTo || '/');
+        this.$nextTick(() => {
+          this.$router.push(this.$store.state.redirectTo || '/');
+        });
       } catch (e) {
         console.debug(e);
         this.$root.$emit('notify', {

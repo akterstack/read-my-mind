@@ -3,6 +3,7 @@
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
         <v-toolbar color="cyan" dark>
+          <v-icon>card_travel</v-icon>
           <v-toolbar-title>My Games</v-toolbar-title>
         </v-toolbar>
 

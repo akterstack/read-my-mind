@@ -31,34 +31,34 @@
         <v-list>
           <v-list-tile to="/game/new">
             <v-list-tile-avatar>
-              <v-icon>videogame_asset</v-icon>
+              <v-icon color="primary">videogame_asset</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>Create a game</v-list-tile-title>
+              <v-list-tile-title>Create game</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile to="/game/join">
             <v-list-tile-avatar>
-              <v-icon>gamepad</v-icon>
+              <v-icon color="primary">gamepad</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>Join a game</v-list-tile-title>
+              <v-list-tile-title>Join game</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile to="/game/hosted">
             <v-list-tile-avatar>
-              <v-icon>card_travel</v-icon>
+              <v-icon color="primary">card_travel</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>My hosted games</v-list-tile-title>
+              <v-list-tile-title>My games</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile to="/game/played">
             <v-list-tile-avatar>
-              <v-icon>rowing</v-icon>
+              <v-icon color="primary">rowing</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>My played games</v-list-tile-title>
+              <v-list-tile-title>My playings</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -69,12 +69,12 @@
             <v-btn flat @click="menu = false" to="/signup"
               >Create account</v-btn
             >
-            <v-btn color="primary" flat @click="menu = false" to="/login"
+            <v-btn color="primary" dark flat @click="menu = false" to="/login"
               >Login</v-btn
             >
           </template>
           <template v-else>
-            <v-btn flat @click="logout">Logout</v-btn>
+            <v-btn color="primary" flat @click="logout">Logout</v-btn>
           </template>
         </v-card-actions>
       </v-card>
