@@ -7,6 +7,7 @@ import Vuetify, {
   VFadeTransition,
 } from 'vuetify/lib';
 import { Ripple } from 'vuetify/lib/directives';
+import colors from 'vuetify/es5/util/colors';
 import 'vuetify/src/stylus/app.styl';
 
 Vue.use(Vuetify, {
@@ -20,5 +21,8 @@ Vue.use(Vuetify, {
   },
   directives: {
     Ripple,
+  },
+  theme: {
+    primary: colors.lightBlue.darken3,
   },
 });
