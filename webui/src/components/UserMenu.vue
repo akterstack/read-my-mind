@@ -21,7 +21,18 @@
 
             <v-list-tile-content>
               <v-list-tile-title>{{ title() }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ subtitle() }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>
+                <template v-if="isLoggedIn()"
+                  >Online -
+                  <router-link to="/logout">Logout</router-link>
+                </template>
+                <template v-else>
+                  <router-link to="/login"> Login </router-link>or
+                  <router-link to="/signup">
+                    create account
+                  </router-link>
+                </template>
+              </v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -62,21 +73,6 @@
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <template v-if="!isLoggedIn()">
-            <v-btn flat @click="menu = false" to="/signup"
-              >Create account</v-btn
-            >
-            <v-btn color="primary" dark flat @click="menu = false" to="/login"
-              >Login</v-btn
-            >
-          </template>
-          <template v-else>
-            <v-btn color="primary" flat @click="logout">Logout</v-btn>
-          </template>
-        </v-card-actions>
       </v-card>
     </v-menu>
   </div>
@@ -114,3 +110,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+a {
+  text-decoration: none;
+}
+</style>
