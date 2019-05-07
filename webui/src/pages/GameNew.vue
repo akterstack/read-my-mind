@@ -75,15 +75,18 @@
               />
             </v-stepper-content>
             <v-stepper-content step="3">
-              <h1>{{ word }}</h1>
-              <p>
+              <div class="display-4 font-weight-black text-xs-center">
+                {{ word }}
+              </div>
+              <div class="caption text-xs-center">
                 Maximum {{ maxPlayer }} player{{ maxPlayer > 1 ? 's' : '' }} can
                 join
-              </p>
-              <p>
+              </div>
+              <div class="caption text-xs-center mb-3">
                 Each can ask {{ maxHint }} hint{{ maxHint > 1 ? 's' : '' }}
                 (yes/no question) maximum
-              </p>
+              </div>
+              <v-divider class="mb-3"></v-divider>
               <StepperActions
                 stepName="publish"
                 nextButtonLabel="Publish"
