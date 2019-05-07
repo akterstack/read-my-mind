@@ -2,7 +2,7 @@
   <v-layout row>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-        <v-toolbar color="cyan" dark>
+        <v-toolbar color="primary" dark>
           <v-icon>rowing</v-icon>
           <v-toolbar-title>My Played Games</v-toolbar-title>
         </v-toolbar>
@@ -25,7 +25,7 @@
           <v-list-tile v-show="!games.length" avatar>
             <v-list-tile-content>
               <v-list-tile-title style="text-align: center"
-                >No game yet</v-list-tile-title
+                >No games yet</v-list-tile-title
               >
             </v-list-tile-content>
           </v-list-tile>

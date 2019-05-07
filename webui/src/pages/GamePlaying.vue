@@ -2,7 +2,7 @@
   <v-layout row align-center justify-center>
     <v-flex xs12 lg6>
       <v-card>
-        <v-toolbar color="cyan" dark>
+        <v-toolbar color="primary" dark>
           <v-toolbar-title>Ask Hints (Max {{ game.maxHint }})</v-toolbar-title>
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>

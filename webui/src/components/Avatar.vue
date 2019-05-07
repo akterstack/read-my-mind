@@ -1,7 +1,7 @@
 <template>
   <span class="v-avatar">
     <img v-if="username" :src="avatarSrc()" :alt="username" />
-    <v-icon v-else color="primary" dark>
+    <v-icon v-else color="primary" dark x-large>
       account_circle
     </v-icon>
   </span>
@@ -18,3 +18,8 @@ export default {
   },
 };
 </script>
+<style scoped>
+img {
+  width: 40px;
+}
+</style>

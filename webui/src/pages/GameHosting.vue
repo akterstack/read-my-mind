@@ -2,7 +2,7 @@
   <v-layout row>
     <v-flex xs12>
       <v-card>
-        <v-toolbar color="cyan" dark>
+        <v-toolbar color="primary" dark>
           <v-toolbar-title>Give Answers</v-toolbar-title>
         </v-toolbar>
         <v-layout align-center justify-center row fill-height>

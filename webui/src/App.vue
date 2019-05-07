@@ -7,7 +7,7 @@
       </v-toolbar-side-icon>
       <v-layout justify-center>
         <v-toolbar-title>
-          <v-btn round flat large color="light-blue darken-3" to="/">
+          <v-btn round flat large color="primary" to="/">
             <v-avatar size="32px" style="margin-right: 10px">
               <img src="@/assets/logo.png" alt="read-my-mind-logo" />
             </v-avatar>
