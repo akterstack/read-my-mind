@@ -195,8 +195,6 @@ export default {
         }
       `,
       result: ({ data }) => {
-        console.log('onsubssess');
-        console.log(data.gameInSessionSubscribe);
         this.game = data.gameInSessionSubscribe;
         this.loadHints();
         this.subscribeAnswer();

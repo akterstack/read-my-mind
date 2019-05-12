@@ -9,28 +9,43 @@
 
         <v-list three-line class="scroll-y">
           <v-list-tile
-            v-show="games.length"
-            v-for="{ id, word, maxPlayer, maxHint, status, players } in games"
+            v-show="hasGame()"
+            v-for="{
+              id,
+              word,
+              maxPlayer,
+              maxHint,
+              status,
+              players,
+            } in Object.values(gameIdMap)"
             :key="id"
             avatar
           >
             <v-list-tile-content>
               <v-list-tile-title>{{ word }}</v-list-tile-title>
               <v-list-tile-sub-title>
-                <span class="subheading">ID {{ id }} . {{ status }}</span>
-                <span class="mr-1"> · </span>
+                <span class="subheading">#{{ id }} - {{ status }}</span>
+                <span class="mr-1"> - </span>
                 <span class="subheading mr-2">joined {{ players.length }}</span>
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn color="primary" @click="start(+id)">Start</v-btn>
+              <v-layout align-end>
+                <v-btn flat color="primary" @click="start(+id)">Start</v-btn>
+                <v-icon @click="remove(+id)" large>delete_forever</v-icon>
+              </v-layout>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile v-show="!games.length" avatar>
+          <v-list-tile v-show="!hasGame()" avatar>
             <v-list-tile-content>
-              <v-list-tile-title style="text-align: center"
-                >No games yet</v-list-tile-title
-              >
+              <v-list-tile-title
+                style="text-align: center"
+                v-text="
+                  $apollo.queries.hostedGames.loading
+                    ? 'Loading...'
+                    : 'No games yet'
+                "
+              ></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -44,8 +59,45 @@ import gql from 'graphql-tag';
 export default {
   data() {
     return {
-      games: [],
+      gameIdMap: {},
     };
+  },
+  methods: {
+    hasGame() {
+      return !!Object.keys(this.gameIdMap).length;
+    },
+    async remove(id) {
+      await this.$apollo.mutate({
+        mutation: gql`
+          mutation GameDelete($id: Int!) {
+            gameDelete(id: $id) {
+              id
+            }
+          }
+        `,
+        variables: {
+          id,
+        },
+      });
+      this.$delete(this.gameIdMap, id);
+    },
+    async start(id) {
+      try {
+        this.$emit('beforeGameStart', this.$store.state.game);
+        await this.$store.dispatch('updateGame', { id, status: 'started' });
+        await this.$store.commit('clearGame');
+        this.$router.push('/game/host');
+        this.$emit('gameStart', this.$store.state.game);
+      } catch (e) {
+        if (e.length) {
+          e.forEach(({ message }) => {
+            if (message === 'GAME_IN_SESSION') {
+              this.$router.push('/game/host');
+            }
+          });
+        }
+      }
+    },
   },
   async created() {
     this.$apollo.addSmartQuery('hostedGames', {
@@ -64,29 +116,33 @@ export default {
           }
         }
       `,
+      fetchPolicy: 'no-cache',
       result({ data }) {
-        this.games = data.hostedGames;
+        data.hostedGames.forEach(game => {
+          this.$set(this.gameIdMap, game.id, game);
+        });
       },
     });
-  },
-  methods: {
-    async start(id) {
-      try {
-        this.$emit('beforeGameStart', this.$store.state.game);
-        await this.$store.dispatch('updateGame', { id, status: 'started' });
-        await this.$store.commit('clearGame');
-        this.$router.push('/game/host');
-        this.$emit('gameStart', this.$store.state.game);
-      } catch (e) {
-        if (e.length) {
-          e.forEach(({ message }) => {
-            if (message === 'GAME_IN_SESSION') {
-              this.$router.push('/game/host');
+    this.$apollo.addSmartSubscription('onJoinGame', {
+      query: gql`
+        subscription JoinGame {
+          onJoinGame {
+            id
+            word
+            status
+            updated
+            maxPlayer
+            maxHint
+            players {
+              id
             }
-          });
+          }
         }
-      }
-    },
+      `,
+      result({ data }) {
+        this.gameIdMap[data.onJoinGame.id] = data.onJoinGame;
+      },
+    });
   },
 };
 </script>

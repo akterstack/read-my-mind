@@ -51,4 +51,9 @@ export default new ApolloClient({
   link: concat(authMiddleware, link),
   cache: new InMemoryCache(),
   connectToDevTools: true,
+  defaultOptions: {
+    query: {
+      fetchPolicy: 'no-cache',
+    },
+  },
 });

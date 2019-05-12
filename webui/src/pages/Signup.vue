@@ -15,6 +15,7 @@
                 type="text"
                 v-model="username"
                 outline
+                autofocus
               ></v-text-field>
               <v-text-field
                 prepend-inner-icon="lock"

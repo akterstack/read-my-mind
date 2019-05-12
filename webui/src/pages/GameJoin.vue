@@ -9,8 +9,10 @@
 
         <v-list three-line class="scroll-y">
           <v-list-tile
-            v-show="games.length"
-            v-for="{ id, word, updated, host, players } in games"
+            v-show="hasGame()"
+            v-for="{ id, word, updated, host, players } in Object.values(
+              gameIdMap
+            )"
             :key="id"
             avatar
           >
@@ -24,14 +26,19 @@
               </v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn color="primary" @click="join(+id)">Join</v-btn>
+              <v-btn flat color="primary" @click="join(+id)">Join</v-btn>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile v-show="!games.length" avatar>
+          <v-list-tile v-show="!hasGame()" avatar>
             <v-list-tile-content>
-              <v-list-tile-title style="text-align: center"
-                >No games yet</v-list-tile-title
-              >
+              <v-list-tile-title
+                style="text-align: center"
+                v-text="
+                  $apollo.queries.gamesToJoin.loading
+                    ? 'Loading...'
+                    : 'No games yet'
+                "
+              ></v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -47,8 +54,43 @@ export default {
   components: { Avatar },
   data() {
     return {
-      games: [],
+      gameIdMap: {},
     };
+  },
+  methods: {
+    hasGame() {
+      return !!Object.entries(this.gameIdMap).length;
+    },
+    async join(id) {
+      try {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation GameJoin($id: Int!) {
+              gameJoin(id: $id) {
+                players {
+                  id
+                }
+              }
+            }
+          `,
+          variables: { id },
+        });
+        this.$router.push('/game/play');
+      } catch (e) {
+        if (e.length) {
+          e.forEach(({ message }) => {
+            this.$root.$emit('notify', {
+              message,
+            });
+          });
+        } else {
+          console.debug(e);
+          this.$root.$emit('notify', {
+            message: 'Unknown error occurred. Please contact admin.',
+          });
+        }
+      }
+    },
   },
   created() {
     this.$apollo.addSmartQuery('gamesToJoin', {
@@ -66,14 +108,17 @@ export default {
           }
         }
       `,
+      fetchPolicy: 'no-cache',
       result({ data }) {
-        this.games = data.gamesToJoin;
+        data.gamesToJoin.forEach(game => {
+          this.$set(this.gameIdMap, game.id, game);
+        });
       },
     });
-    this.$apollo.addSmartSubscription('gameSubscribe', {
+    this.$apollo.addSmartSubscription('onGameCreate', {
       query: gql`
-        subscription GameSubscribe {
-          gameSubscribe {
+        subscription OnGameCreate {
+          onGameCreate {
             id
             updated
             host {
@@ -86,43 +131,47 @@ export default {
         }
       `,
       result({ data }) {
-        this.games.push(data.gameSubscribe);
+        this.$set(this.gameIdMap, `${data.onGameCreate.id}`, data.onGameCreate);
       },
     });
-  },
-  methods: {
-    async join(id) {
-      try {
-        await this.$apollo.mutate({
-          mutation: gql`
-            mutation GameJoin($id: Int!) {
-              gameJoin(id: $id) {
-                players {
-                  id
-                }
-              }
+    this.$apollo.addSmartSubscription('onGameUpdate', {
+      query: gql`
+        subscription OnGameCreate {
+          onGameUpdate {
+            id
+            updated
+            host {
+              username
             }
-          `,
-          variables: { id },
-          update: () => {
-            this.$router.push('/game/play');
-          },
-        });
-      } catch (e) {
-        if (e.length) {
-          e.forEach(({ message }) => {
-            this.$root.$emit('notify', {
-              message,
-            });
-          });
-        } else {
-          console.debug(e);
-          this.$root.$emit('notify', {
-            message: 'Unknown error occurred. Please contact admin.',
-          });
+            players {
+              username
+            }
+          }
         }
-      }
-    },
+      `,
+      result({ data }) {
+        this.$set(this.gameIdMap, `${data.onGameUpdate.id}`, data.onGameUpdate);
+      },
+    });
+    this.$apollo.addSmartSubscription('onGameDelete', {
+      query: gql`
+        subscription OnGameDelete {
+          onGameDelete {
+            id
+            updated
+            host {
+              username
+            }
+            players {
+              username
+            }
+          }
+        }
+      `,
+      result({ data }) {
+        this.$delete(this.gameIdMap, `${data.onGameDelete.id}`);
+      },
+    });
   },
 };
 </script>

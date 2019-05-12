@@ -143,6 +143,7 @@ export class GameResolver {
     @PubSub('GAME_DELETE') deleteGamePublisher: Publisher<Game>
   ): Promise<Game> {
     const game = await this.gameRepository.findOne({
+      relations: ['host'],
       where: {
         id,
         host: { id: user.id },
@@ -192,9 +193,23 @@ export class GameResolver {
   }
 
   @Subscription({
-    topics: ['GAME_CREATE', 'GAME_UPDATE', 'GAME_DELETE'],
+    topics: ['GAME_CREATE'],
   })
-  gameSubscribe(@Root() gamePayload: Game): Game {
+  onGameCreate(@Root() gamePayload: Game): Game {
+    return gamePayload;
+  }
+
+  @Subscription({
+    topics: ['GAME_UPDATE'],
+  })
+  onGameUpdate(@Root() gamePayload: Game): Game {
+    return gamePayload;
+  }
+
+  @Subscription({
+    topics: ['GAME_DELETE'],
+  })
+  onGameDelete(@Root() gamePayload: Game): Game {
     return gamePayload;
   }
 

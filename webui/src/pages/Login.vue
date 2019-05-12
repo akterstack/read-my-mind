@@ -15,6 +15,8 @@
                 type="text"
                 v-model="username"
                 outline
+                autofocus
+                @keydown.enter="login"
               ></v-text-field>
               <v-text-field
                 id="password"
@@ -24,6 +26,7 @@
                 type="password"
                 v-model="password"
                 outline
+                @keydown.enter="login"
               ></v-text-field>
             </v-card-text>
             <v-card-actions>

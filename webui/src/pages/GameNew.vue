@@ -20,8 +20,8 @@
                     label="Your precious word"
                     prepend-inner-icon="place"
                     v-model="word"
-                    @keydown.enter="el = 2"
                     autofocus
+                    @keydown.enter="el = 2"
                   ></v-text-field>
                 </v-flex>
               </v-layout>
