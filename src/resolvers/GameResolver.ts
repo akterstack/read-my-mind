@@ -44,7 +44,7 @@ export class GameResolver {
       })
       .getMany()).filter(game => {
       // @ts-ignore
-      return game.maxPlayer < game.__players__.length;
+      return game.maxPlayer > game.__players__.length;
     });
   }
 
@@ -192,7 +192,7 @@ export class GameResolver {
   }
 
   @Subscription({
-    topics: ['GAME_CREATE', 'GAME_UPDATE'],
+    topics: ['GAME_CREATE', 'GAME_UPDATE', 'GAME_DELETE'],
   })
   gameSubscribe(@Root() gamePayload: Game): Game {
     return gamePayload;
