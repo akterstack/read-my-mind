@@ -13,7 +13,7 @@ import {
   Root,
   Subscription,
 } from 'type-graphql';
-import { Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 
 export class GameResolver {
@@ -33,14 +33,18 @@ export class GameResolver {
 
   @Query(() => [Game])
   async gamesToJoin(@Ctx() { user }: Context): Promise<Game[]> {
-    return this.gameRepository.find({
-      relations: ['host', 'players'],
-      where: [
-        {
-          status: GameStatus.PUBLISED,
-          host: { id: Not(user.id) },
-        },
-      ],
+    return (await this.gameRepository
+      .createQueryBuilder('game')
+      .leftJoinAndSelect('game.host', 'host')
+      .leftJoinAndSelect('game.players', 'player')
+      .where('game.status = :status', { status: GameStatus.PUBLISED })
+      .andWhere('host.id != :hostId', { hostId: user.id })
+      .andWhere('(player.id != :playerId OR player.id ISNULL)', {
+        playerId: user.id,
+      })
+      .getMany()).filter(game => {
+      // @ts-ignore
+      return game.maxPlayer < game.__players__.length;
     });
   }
 
@@ -61,7 +65,7 @@ export class GameResolver {
       order: {
         updated: 'DESC',
       },
-      take: 10,
+      take: 100,
       cache: true,
     });
   }
@@ -107,17 +111,22 @@ export class GameResolver {
   async gameUpdate(
     @Arg('id', () => Int) id: number,
     @Arg('status') status: string,
-    @Ctx() ctx: Context,
+    @Ctx() { user }: Context,
     @PubSub('GAME_UPDATE') updateGamePublisher: Publisher<Game>,
     @PubSub('GAME_IN_SESSION') sessionGamePublisher: Publisher<Game>
   ): Promise<Game> {
-    const gameInSession = await this.gameService.gameInSession(ctx.user);
+    const gameInSession = await this.gameService.gameInSession(user);
     if (status === GameStatus.STARTED && gameInSession) {
       throw new Error('GAME_IN_SESSION');
     }
-    const game = await this.gameRepository.findOne(id);
-    if (game.host.id !== ctx.user.id) {
-      throw new Error('You are not the host of this game');
+    const game = await this.gameRepository.findOne({
+      id,
+      host: { id: user.id },
+    });
+    if (!game) {
+      throw new Error(
+        `Game not exists or you are not the owner of the Game { id: ${id} }`
+      );
     }
     const gameToUpdate = { ...game, status };
     // @ts-ignore
@@ -128,9 +137,32 @@ export class GameResolver {
   }
 
   @Mutation(() => Game)
+  async gameDelete(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { user }: Context,
+    @PubSub('GAME_DELETE') deleteGamePublisher: Publisher<Game>
+  ): Promise<Game> {
+    const game = await this.gameRepository.findOne({
+      where: {
+        id,
+        host: { id: user.id },
+      },
+    });
+    if (!game) {
+      throw new Error(
+        `Game not exists or you are not the owner of the Game { id: ${id} }`
+      );
+    }
+    await this.gameRepository.delete(id);
+    await deleteGamePublisher(game);
+    return game;
+  }
+
+  @Mutation(() => Game)
   async gameJoin(
     @Arg('id', () => Int!) id: number,
-    @Ctx() { user }: Context
+    @Ctx() { user }: Context,
+    @PubSub('JOIN_GAME') publishJoinGame: Publisher<Game>
   ): Promise<Game> {
     const game = await this.gameRepository.findOne(id);
     if (game.host.id === user.id) {
@@ -139,7 +171,9 @@ export class GameResolver {
     const myUser = await this.userRepository.findOne(user.id);
     (await game.players).push(myUser);
     // @ts-ignore
-    return this.gameService.save(game);
+    const latestGame = await this.gameService.save(game);
+    await publishJoinGame(latestGame);
+    return latestGame;
   }
 
   @Mutation(() => CommittedPlayer)
@@ -171,6 +205,16 @@ export class GameResolver {
     },
   })
   gameInSessionSubscribe(@Root() gamePayload: Game): Game {
+    return gamePayload;
+  }
+
+  @Subscription({
+    topics: 'JOIN_GAME',
+    filter: ({ payload, context: { user } }) => {
+      return payload.host.id === user.id;
+    },
+  })
+  onJoinGame(@Root() gamePayload: Game): Game {
     return gamePayload;
   }
 }
